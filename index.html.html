@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gerador de Orçamentos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js">
+
+
+</script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f7f7f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 6px;
+            box-shadow: 0 0 6px #ccc;
+        }
+
+        .section h2 {
+            border-bottom: 2px solid #2a75bb;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            color: #2a75bb;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="email"],
+        textarea { /* Adicionado textarea */
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea { /* Estilo específico para textarea */
+            resize: vertical; /* Permite redimensionar verticalmente */
+            min-height: 80px; /* Altura mínima */
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .flex-row > div {
+            flex: 1 1 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ccc;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e6f0fa;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            margin-top: 15px;
+            cursor: pointer;
+            border: none;
+            background-color: #2a75bb;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: #145a86;
+        }
+
+        .btn-danger {
+            background-color: #cc3c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 6px 10px;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-danger:hover {
+            background-color: #8b2727;
+        }
+
+        #orcamento {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            padding: 25px;
+            background: white;
+            display: none;
+            border-radius: 6px;
+            box-shadow: 0 0 8px #bbb;
+        }
+
+        .header-fixed {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .header-fixed .info {
+            flex-grow: 1;
+        }
+
+        .header-fixed p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+
+        .logo {
+            width: 140px;
+            height: auto;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #2a75bb;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #cc3c3c;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            line-height: 28px;
+            text-align: center;
+        }
+
+        .modal-close:hover {
+            background: #8b2727;
+        }
+
+        .modal table {
+            margin-top: 10px;
+        }
+
+        /* Adjust item table column widths */
+        #itens th:nth-child(1), #itens td:nth-child(1) { width: 5%; } /* # */
+        #itens th:nth-child(2), #itens td:nth-child(2) { width: 45%; } /* Descrição */
+        #itens th:nth-child(3), #itens td:nth-child(3) { width: 10%; } /* Qtde */
+        #itens th:nth-child(4), #itens td:nth-child(4) { width: 15%; } /* Valor Unitário */
+        #itens th:nth-child(5), #itens td:nth-child(5) { width: 15%; } /* Subtotal */
+        #itens th:nth-child(6), #itens td:nth-child(6) { width: 10%; } /* Ações */
+
+        #itens input.qtde {
+            width: 60px; /* Reduced width for quantity */
+            text-align: center;
+        }
+
+        #itens input.valor {
+            width: 100px; /* Reduced width for value */
+        }
+
+        /* INÍCIO DO NOVO CSS PARA AJUSTAR OS BOTÕES E ALINHAMENTO */
+        .modal table .btn, .modal table .btn-danger {
+            padding: 6px 10px; /* Reduz o padding para botões menores em tabelas */
+            font-size: 13px; /* Tamanho da fonte menor para os botões */
+            margin: 2px; /* Adiciona uma pequena margem para separar os botões */
+            display: inline-block; /* Garante que fiquem na mesma linha e aceitem margem/padding */
+        }
+
+        /* Alinhar o conteúdo da coluna Ações ao centro nos modais */
+        #modalOrcamentos th:last-child,
+        #modalOrcamentos td:last-child,
+        #modalBuscarCliente th:last-child,
+        #modalBuscarCliente td:last-child {
+            text-align: center;
+        }    .modal table .btn, .modal table .btn-danger {
+        padding: 6px 10px;
+        font-size: 13px;
+        margin: 2px;
+        display: inline-block;
+    }
+
+    /* Alinhar o conteúdo da coluna Ações ao centro nos modais */
+    #modalOrcamentos th:last-child,
+    #modalOrcamentos td:last-child,
+    #modalBuscarCliente th:last-child,
+    #modalBuscarCliente td:last-child {
+        text-align: center;
+        width: 15%; /* Ajusta a largura da coluna Ações para 15% */
+        white-space: nowrap; /* Evita que os botões quebrem linha */
+    }
+
+    /* Ajustar largura das outras colunas para somar 100% */
+    #modalOrcamentos th:nth-child(1), #modalOrcamentos td:nth-child(1) { width: 15%; } /* Número */
+    #modalOrcamentos th:nth-child(2), #modalOrcamentos td:nth-child(2) { width: 45%; } /* Cliente */
+    #modalOrcamentos th:nth-child(3), #modalOrcamentos td:nth-child(3) { width: 25%; } /* Data */
+
+    #modalBuscarCliente th:nth-child(1), #modalBuscarCliente td:nth-child(1) { width: 30%; } /* Nome */
+    #modalBuscarCliente th:nth-child(2), #modalBuscarCliente td:nth-child(2) { width: 20%; } /* CPF/CNPJ */
+    #modalBuscarCliente th:nth-child(3), #modalBuscarCliente td:nth-child(3) { width: 15%; } /* Telefone */
+    #modalBuscarCliente th:nth-child(4), #modalBuscarCliente td:nth-child(4) { width: 20%; } /* Email */
+
+
+    
+.total-display {
+  text-align: right;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+.feedback {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e6f9ec;
+  border: 1px solid #b5e0c9;
+  color: #2a7b4f;
+  border-radius: 4px;
+  display: none;
+}
+
+.alerta-sucesso {
+    background-color: #dff0d8; /* Verde claro para sucesso */
+    border: 1px solid #b2d8b2;
+    color: #3c763d;
+    padding: 12px 20px;
+    margin: 0; /* Remover margens padrão para controle preciso com top/right */
+    width: auto; /* A largura se ajusta ao conteúdo */
+    max-width: 350px; /* Largura máxima para a mensagem */
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Sombra mais destacada */
+    opacity: 0; /* Começa invisível para a transição */
+    transition: opacity 0.5s ease-in-out; /* Transição suave */
+    z-index: 9999; /* Garante que a mensagem fique acima de outros elementos */
+
+    /* PROPRIEDADES NOVAS/AJUSTADAS PARA POSICIONAMENTO FIXO */
+    position: fixed; /* Fixa a mensagem na tela, não rola com o conteúdo */
+    top: 20px; /* 20px do topo da janela de visualização */
+    right: 20px; /* 20px da direita da janela de visualização */
+
+    display: none; /* Continua escondida por padrão, JS mostrará/esconderá */
+}
+
+/* Se você também tiver um estilo para mensagens de erro, adapte de forma similar */
+.alerta-erro {
+    background-color: #f2dede; /* Vermelho claro para erro */
+    border: 1px solid #ebccd1;
+    color: #a94442;
+    padding: 12px 20px;
+    margin: 0;
+    width: auto;
+    max-width: 350px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 9999;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: none;
+}
+
+/* Novos estilos para aplicar APENAS quando o PDF for gerado */
+.pdf-specific-styles {
+    /* Ajustes gerais de fonte para o PDF para que tudo fique menor e caiba melhor */
+    font-size: 11px; /* Fonte base um pouco menor para todo o orçamento no PDF */
+}
+
+/* Estilo para o campo de descrição DENTRO da tabela do orçamento no PDF */
+/* Assumindo que a descrição está na segunda coluna (td:nth-child(2)) dos itens */
+.pdf-specific-styles #orcamento #itens-lista-pdf tbody td:nth-child(2) {
+    text-align: justify; /* Justifica o texto da descrição */
+    font-size: 10px;    /* Fonte ainda menor para a descrição no PDF */
+    line-height: 1.3;   /* Ajusta espaçamento de linha para melhor leitura em fonte menor */
+}
+
+/* Ajustes para outros elementos dentro do orçamento para o PDF (opcional) */
+.pdf-specific-styles #orcamento h1 {
+    font-size: 20px; /* Título principal menor */
+}
+.pdf-specific-styles #orcamento h2 {
+    font-size: 15px; /* Títulos de seção menores */
+}
+.pdf-specific-styles #orcamento table {
+    font-size: 10px; /* Texto da tabela geral menor */
+}
+.pdf-specific-styles #orcamento .total-row {
+    font-size: 12px; /* Linha de total menor */
+}
+
+/* Certifique-se de que o ID da tabela no orçamento gerado seja #itens-lista-pdf
+   Se for outro ID, ajuste o seletor acima. */
+/* Se a descrição não for o td:nth-child(2), você precisará ajustar o seletor.
+   Idealmente, se a geração do HTML para #orcamento puder adicionar uma classe
+   como "descricao-coluna" ao <td> da descrição, seria mais robusto. */
+</style>
+</head>
+<body>
+    <div id="mensagem-alerta" class="alerta-sucesso"></div>
+    <h1>Gerador de Orçamentos</h1>
+
+    <section class="section" id="cabecalho">
+        <div class="header-fixed">
+            <img src="HBS_logo.png" alt="Logo HBS" class="logo" />
+            <div class="info">
+                <h2>HBS ESTRUTURAS METÁLICAS</h2>
+                <p><b>CNPJ:</b> 22.644.654/0001-90</p>
+                <p><b>Endereço:</b> Av. Ieda de Carvalho Silva, 2780 - Jd. Damasco - Varginha - MG - CEP: 37060-063</p>
+                <p><b>Telefone:</b> (35) 99992-1061</p>
+                <p><b>Email:</b> henriquebotrel@hotmail.com</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="dados-orcamento">
+        <h2>Dados do Orçamento</h2>
+        <div style="margin-bottom: 20px;">
+            <button class="btn" onclick="novoOrcamento()">📄 Novo Orçamento</button>
+            <button class="btn" onclick="abrirModalOrcamentos()">📁 Meus Orçamentos</button>
+        </div>
+        <div class="flex-row">
+            <div>
+                <label for="numero">Orçamento Nº</label>
+                <input type="text" id="numero" readonly />
+            </div>
+            <div>
+                <label for="data">Data</label>
+                <input type="date" id="data" />
+            </div>
+            <div>
+                <label for="validade">Validade (dias)</label>
+                <input type="number" id="validade" value="15" min="1" />
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="dados-cliente">
+        <h2>Dados do Cliente</h2>
+        <div style="margin-bottom: 15px;">
+            <button class="btn" onclick="abrirModalNovoCliente()">➕ Novo Cliente</button>
+            <button class="btn" onclick="abrirModalBuscarCliente()">🔍 Buscar Clientes</button>
+        </div>
+        <div class="flex-row">
+            <div>
+                <label for="cliente">Nome do Cliente</label>
+                <input type="text" id="cliente" />
+            </div>
+            <div>
+                <label for="doc">CPF/CNPJ</label>
+                <input type="text" id="doc" maxlength="18" placeholder="CPF ou CNPJ" />
+            </div>
+        </div>
+        <div class="flex-row" style="margin-top: 15px;">
+            <div>
+                <label for="endereco">Endereço</label>
+                <input type="text" id="endereco" />
+            </div>
+            <div>
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" maxlength="15" placeholder="(35) 99999-9999" />
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" />
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="itens-orcamento">
+        <h2>Itens do Orçamento</h2>
+        <table id="itens">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Descrição</th>
+                    <th>Qtde</th>
+                    <th>Valor Unitário (R$)</th>
+                    <th>Subtotal (R$)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button class="btn" onclick="adicionarItem()">
+<p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
+➕ Adicionar Item</button>
+    </section>
+
+    <section class="section" id="dados-complementares">
+        <h2>Dados Complementares</h2>
+        <div style="margin-bottom: 15px;">
+            <label for="formaPagamento">Forma de pagamento</label>
+            <input type="text" id="formaPagamento" />
+        </div>
+        <div>
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes"></textarea>
+        </div>
+    </section>
+
+    <div style="text-align: center; margin-bottom: 40px;">
+        <button class="btn" onclick="gerarOrcamento()">💾 Salvar Orçamento</button>
+        <button class="btn" onclick="baixarPDF()">Baixar PDF</button>
+<div class="feedback" id="feedback-msg">✔️ Ação realizada com sucesso!</div>
+</button>
+    </div>
+
+    <div id="orcamento"></div>
+
+    <div id="modalOrcamentos" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModalOrcamentos()">×</button>
+            <h2>Orçamentos Salvos</h2>
+            <input
+                type="text"
+                id="buscaOrcamento"
+                placeholder="Digite o número do orçamento..."
+                style="width: 100%; padding: 8px; margin-bottom: 15px"
+            />
+            <table>
+                <thead>
+                    <tr style="background: #eee;">
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaOrcamentos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modalNovoCliente" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModalNovoCliente()">×</button>
+            <h2>Novo Cliente</h2>
+            <div style="margin-top: 10px;">
+                <label for="clienteNome">Nome <span style="color: red;">*</span></label>
+                <input type="text" id="clienteNome" required /> </div>
+            <div style="margin-top: 10px;">
+                <label for="clienteDoc">CPF/CNPJ</label>
+                <input type="text" id="clienteDoc" maxlength="18" placeholder="CPF ou CNPJ" />
+            </div>
+            <div style="margin-top: 10px;">
+                <label for="clienteEndereco">Endereço</label>
+                <input type="text" id="clienteEndereco" />
+            </div>
+            <div style="margin-top: 10px;">
+                <label for="clienteTelefone">Telefone</label>
+                <input type="text" id="clienteTelefone" maxlength="15" placeholder="(35) 99999-9999" />
+            </div>
+            <div style="margin-top: 10px;">
+                <label for="clienteEmail">Email</label>
+                <input type="email" id="clienteEmail" />
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="salvarCliente()">Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalBuscarCliente" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModalBuscarCliente()">×</button>
+            <h2>Buscar Clientes</h2>
+            <input
+                type="text"
+                id="buscaCliente"
+                placeholder="Digite o nome do cliente..."
+                style="width: 100%; padding: 8px; margin-bottom: 15px"
+            />
+            <table>
+                <thead>
+                    <tr style="background: #eee;">
+                        <th>Nome</th>
+                        <th>CPF/CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="listaClientes"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Constantes para chaves do localStorage
+        const ORCAMENTO_PREFIX = "orcamento_";
+        const CLIENTE_PREFIX = "cliente_";
+
+        // Função para gerar número sequencial de orçamento
+        function gerarNumeroOrcamento() {
+            const ano = new Date().getFullYear();
+            let contador = parseInt(localStorage.getItem(`contador_${ano}`)) || 0;
+            contador++;
+            localStorage.setItem(`contador_${ano}`, contador);
+            return `${contador}/${ano}`;
+        }
+
+        // Iniciar novo orçamento
+        function novoOrcamento() {
+            document.getElementById("numero").value = gerarNumeroOrcamento();
+            document.getElementById("data").value = new Date().toISOString().split('T')[0]; // Simplificado
+            // Ajuste para data GMT-3 (Varginha)
+            const now = new Date();
+            // Calcula o fuso horário de Brasília (-3 horas em relação ao UTC)
+            // getTimezoneOffset() retorna a diferença em minutos entre UTC e a hora local.
+            // Ex: se Varginha é UTC-3, getTimezoneOffset() pode retornar 180 (para UTC+3) ou -180 (para UTC-3), dependendo da implementação.
+            // A forma mais robusta é construir a data com base no UTC e depois ajustar.
+            // Ou, para inputs type="date", o ideal é apenas a data local sem fuso horário.
+            // A solução mais simples para o input type="date" é pegar a data local e formatar para 'YYYY-MM-DD'.
+            const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            document.getElementById("data").value = localDate.toISOString().split('T')[0];
+
+            document.getElementById("validade").value = 15;
+            document.getElementById("cliente").value = "";
+            document.getElementById("doc").value = "";
+            document.getElementById("endereco").value = "";
+            document.getElementById("telefone").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("formaPagamento").value = "";
+            document.getElementById("observacoes").value = "";
+            document.querySelector("#itens tbody").innerHTML = "";
+            adicionarItem(); // Adiciona o primeiro item vazio
+            atualizarTotais();
+            document.getElementById("orcamento").style.display = "none";
+        }
+
+        // Adicionar novo item na tabela
+        function adicionarItem() {
+            const tbody = document.querySelector("#itens tbody");
+            const index = tbody.children.length + 1;
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${index}</td>
+                <td><input type="text" class="descricao" placeholder="Descrição do item" /></td>
+                <td><input type="number" class="qtde" value="1" min="1" step="1" /></td>
+                <td><input type="number" class="valor" value="0.00" min="0" step="0.01" /></td> <td class="subtotal">R$ 0,00</td>
+                <td><button class="btn-danger" title="Remover item" onclick="removerItem(this)">🗑️</button></td>
+            `;
+            tbody.appendChild(row);
+
+            // Adiciona eventos para atualizar subtotal e total ao alterar
+            row.querySelectorAll(".qtde, .valor").forEach((input) => {
+                input.addEventListener("input", atualizarTotais);
+                // Adiciona listener para formatar o valor ao sair do campo (blur)
+                if (input.classList.contains('valor')) {
+                    input.addEventListener("blur", function() {
+                        this.value = formatarValorUnitario(this.value);
+                    });
+                     // Garante que o valor inicial já esteja formatado ao adicionar
+                    this.value = formatarValorUnitario(this.value);
+                }
+            });
+            atualizarTotais();
+        }
+
+        // Remove item da tabela
+        function removerItem(btn) {
+            const row = btn.closest("tr");
+            row.remove();
+            atualizarIndices();
+            atualizarTotais();
+            // Se não houver mais itens, adicione um novo para evitar tabela vazia
+            if (document.querySelectorAll("#itens tbody tr").length === 0) {
+                adicionarItem();
+            }
+        }
+
+        // Atualiza índices na tabela (1, 2, 3...)
+        function atualizarIndices() {
+            const rows = document.querySelectorAll("#itens tbody tr");
+            rows.forEach((row, i) => {
+                row.cells[0].textContent = i + 1;
+            });
+        }
+
+        
+// Atualiza o total geral em tempo real
+function atualizarTotais() {
+    const rows = document.querySelectorAll("#itens tbody tr");
+    let totalGeral = 0;
+    rows.forEach((row) => {
+        const qtdeInput = row.querySelector(".qtde");
+        const valorInput = row.querySelector(".valor");
+
+        const qtde = parseInt(qtdeInput.value) || 0;
+        const valor = parseFloat(valorInput.value.replace(",", ".")) || 0; // Converte vírgula para ponto se necessário
+
+        const subtotal = qtde * valor;
+
+        row.querySelector(".subtotal").textContent = subtotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        totalGeral += subtotal;
+    });
+    // Atualiza o display do total geral
+    document.getElementById("total-geral").textContent = totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+        // Gerar orçamento (exibe e salva)
+// Cole esta função ATUALIZADA em seu arquivo, substituindo a original.
+        function gerarOrcamento() {
+            atualizarTotais();
+
+            const numero = document.getElementById("numero").value;
+            const data = document.getElementById("data").value;
+            const validadeDias = parseInt(document.getElementById("validade").value) || 15;
+            const validade = new Date(data);
+            validade.setDate(validade.getDate() + validadeDias);
+            const validadeFormatada = validade.toLocaleDateString("pt-BR");
+
+            const cliente = document.getElementById("cliente").value.trim();
+            const doc = document.getElementById("doc").value.trim();
+            const endereco = document.getElementById("endereco").value.trim();
+            const telefone = document.getElementById("telefone").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const formaPagamento = document.getElementById("formaPagamento").value.trim();
+            const observacoes = document.getElementById("observacoes").value.trim();
+
+            if (!numero || !data || !cliente) {
+                alert("Por favor, preencha número do orçamento, data e nome do cliente.");
+                return;
+            }
+
+            const rows = document.querySelectorAll("#itens tbody tr");
+            if (rows.length === 0) {
+                alert("Adicione pelo menos um item ao orçamento.");
+                return;
+            }
+
+            let totalGeral = 0;
+            const itens = [];
+
+            let hasInvalidItem = false;
+            rows.forEach((row) => {
+                const descricao = row.querySelector(".descricao").value.trim();
+                const qtde = parseInt(row.querySelector(".qtde").value);
+                const valor = parseFloat(row.querySelector(".valor").value);
+
+                if (!descricao || isNaN(qtde) || qtde <= 0 || isNaN(valor) || valor < 0) {
+                    hasInvalidItem = true;
+                }
+
+                const subtotal = qtde * valor;
+                totalGeral += subtotal;
+                itens.push({ descricao, qtde, valor, subtotal });
+            });
+
+            if (hasInvalidItem) {
+                alert("Por favor, preencha a descrição, quantidade (número inteiro maior que zero) e valor unitário (número maior ou igual a zero) para todos os itens.");
+                return;
+            }
+
+            // =========================================================================
+            // INÍCIO DAS ALTERAÇÕES NO LAYOUT DO PDF
+            // =========================================================================
+            let html = `
+                <div style="border: 1px solid #ccc; padding: 20px; border-radius: 6px; font-family: Arial, sans-serif; font-size: 13px; color: #333; width: 100%; box-sizing: border-box;">
+                    <div style="display: flex; align-items: center; gap: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
+                        <img src="HBS_logo.png" alt="Logo HBS" style="width: 140px; height: auto;" />
+                        <div style="line-height: 1.2;">
+                            <h2 style="margin: 0 0 6px 0; color: #2a75bb;">HBS ESTRUTURAS METÁLICAS</h2>
+                            <div style="border-bottom: 1px solid #ccc; margin-bottom: 8px;"></div>
+                            <p style="margin: 2px 0;"><strong>CNPJ:</strong> 22.644.654/0001-90</p>
+                            <p style="margin: 2px 0;"><strong>Endereço:</strong> Av. Ieda de Carvalho Silva, 2780 - Jd. Damasco - Varginha - MG</p>
+                            <p style="margin: 2px 0;"><strong>CEP:</strong> 37060-063</p>
+                            <p style="margin: 2px 0;"><strong>Telefone:</strong> (35) 99992-1061</p>
+                            <p style="margin: 2px 0;"><strong>Email:</strong> henriquebotrel@hotmail.com</p>
+                        </div>
+                    </div>
+
+                    <h2 style="text-align: center; color: #2a75bb; margin: 20px 0; font-size: 22px; background: #e6f0fa; padding: 8px; border-radius: 4px;">ORÇAMENTO Nº ${numero}</h2>
+
+                    <div style="border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin-bottom: 15px; box-sizing: border-box;">
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <p style="margin: 2px 10px 2px 0;"><strong>Data:</strong> ${new Date(data).toLocaleDateString("pt-BR")}</p>
+                            <p style="margin: 2px 0;"><strong>Validade:</strong> ${validadeFormatada}</p>
+                        </div>
+                    </div>
+
+                    <div style="border: 1px solid #ddd; border-radius: 4px; padding: 10px; margin-bottom: 20px; box-sizing: border-box;">
+                        <h3 style="color: #2a75bb; border-bottom: 1px solid #ddd; margin-top: 0; padding-bottom: 5px; margin-bottom: 10px;">Dados do Cliente</h3>
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <p style="margin: 2px 0; flex-basis: 50%; min-width: 250px;"><strong>Nome:</strong> ${cliente}</p>
+                            <p style="margin: 2px 0; flex-basis: 45%; min-width: 200px;"><strong>CPF/CNPJ:</strong> ${doc || 'Não informado'}</p>
+                        </div>
+                        <p style="margin: 8px 0 8px 0;"><strong>Endereço:</strong> ${endereco || 'Não informado'}</p>
+                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                            <p style="margin: 2px 0; flex-basis: 50%; min-width: 250px;"><strong>Telefone:</strong> ${telefone || 'Não informado'}</p>
+                            <p style="margin: 2px 0; flex-basis: 45%; min-width: 200px;"><strong>Email:</strong> ${email || 'Não informado'}</p>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #2a75bb; margin-top: 30px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Itens do Orçamento</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background-color: #f0f8ff;">
+                                <th style="border: 1px solid #ccc; padding: 8px; width: 5%; text-align: left;">#</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; width: 45%; text-align: left;">Descrição</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; width: 10%; text-align: center;">Qtde</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; width: 20%; text-align: right;">Valor Unitário (R$)</th>
+                                <th style="border: 1px solid #ccc; padding: 8px; width: 20%; text-align: right;">Subtotal (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            itens.forEach((item, i) => {
+                html += `
+                        <tr>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: left; font-size: 11px;">${i + 1}</td>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: justify; font-size: 11px;">${item.descricao}</td>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: center; font-size: 11px;">${item.qtde}</td>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; font-size: 11px;">${item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; font-size: 11px;">${item.subtotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
+                        </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align:right; border: 1px solid #ccc; padding: 10px; font-size: 16px;"><strong>Total Geral:</strong></td>
+                                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; font-size: 16px; background-color: #f0f8ff;"><strong>${totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <h3 style="color: #2a75bb; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Dados Complementares</h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <p style="margin: 5px 0;"><strong>Forma de Pagamento:</strong> ${formaPagamento || 'Não especificada'}</p>
+                    </div>
+                    <div>
+                        <p style="margin: 5px 0;"><strong>Observações:</strong></p>
+                        <div style="margin: 5px 0; padding-left: 5px; min-height: 40px;">${observacoes.replace(/\n/g, '<br>') || 'Nenhuma observação'}</div>
+                    </div>
+                </div>`;
+            // =========================================================================
+            // FIM DAS ALTERAÇÕES NO LAYOUT DO PDF
+            // =========================================================================
+
+            const orcamentoDiv = document.getElementById("orcamento");
+            orcamentoDiv.innerHTML = html;
+            orcamentoDiv.style.display = "block";
+
+            // Salvar no localStorage
+            localStorage.setItem(
+                `${ORCAMENTO_PREFIX}${numero}`,
+                JSON.stringify({
+                    numero,
+                    data,
+                    validadeDias,
+                    cliente,
+                    doc: doc.replace(/\D/g, ""),
+                    endereco,
+                    telefone: telefone.replace(/\D/g, ""),
+                    email,
+                    formaPagamento,
+                    observacoes,
+                    itens,
+                })
+            );
+
+            mostrarMensagem("💾 Orçamento salvo com sucesso!");
+        }
+        // Baixar PDF
+        function baixarPDF() {
+            const orcamentoDiv = document.getElementById("orcamento");
+
+            if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
+                mostrarMensagem("🚨 Gere um orçamento antes de baixar o PDF.");
+                return;
+            }
+
+            // PASSO 1: Adiciona a classe com os estilos específicos para PDF (se ainda estiver usando)
+            // orcamentoDiv.classList.add("pdf-specific-styles"); // Se você removeu, não precisa mais dessa linha
+
+            // Obter o nome do cliente e formatá-lo
+            const nomeCliente = document.getElementById("cliente").value.trim();
+            let nomeClienteFormatado = "";
+            if (nomeCliente) {
+                // Remove acentos e caracteres especiais, substitui espaços por underscores
+                nomeClienteFormatado = nomeCliente
+                    .normalize("NFD") // Normaliza para decompor caracteres acentuados
+                    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos
+                    .replace(/[^a-zA-Z0-9\s]/g, "") // Remove caracteres não alfanuméricos (exceto espaços)
+                    .replace(/\s+/g, "_") // Substitui múltiplos espaços por um único underscore
+                    .toLowerCase(); // Converte para minúsculas
+                // Adiciona um underscore no final se houver um nome de cliente para separar do número
+                if (nomeClienteFormatado) {
+                    nomeClienteFormatado = nomeClienteFormatado + "_";
+                }
+            }
+
+            // Pega o número do orçamento atual
+            const numeroOrcamento = document.getElementById("numero").value.replace(/\//g, "_");
+
+            // Pequeno atraso para garantir que os estilos CSS sejam aplicados (se ainda estiver usando a classe temporária)
+            setTimeout(() => {
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5], // Margins: Top, Left, Bottom, Right
+                    // MODIFICAÇÃO AQUI: Novo formato do nome do arquivo
+                    filename: `orcamento_${nomeClienteFormatado}${numeroOrcamento}.pdf`,
+                    image: { type: "jpeg", quality: 0.98 },
+                    html2canvas: {
+                        scale: 2, // Aumenta a resolução para melhor qualidade no PDF
+                        useCORS: true,
+                        scrollY: 0,
+                    },
+                    jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+                };
+
+                html2pdf().set(opt).from(orcamentoDiv).save().then(() => {
+                    mostrarMensagem("✅ PDF gerado e salvo com sucesso!");
+                }).catch(error => {
+                    console.error("Erro ao gerar PDF:", error);
+                    mostrarMensagem("🚨 Ocorreu um erro ao gerar o PDF. Verifique o console do navegador para mais detalhes. Se estiver rodando o arquivo diretamente do seu computador, tente abri-lo através de um servidor local.");
+                }).finally(() => {
+                    // PASSO 2: Remove a classe APÓS o processo de geração do PDF (se ainda estiver usando)
+                    // orcamentoDiv.classList.remove("pdf-specific-styles"); // Se você removeu, não precisa mais dessa linha
+                });
+            }, 200); // 200ms de atraso
+        }
+
+// ... (o restante do seu código JavaScript)
+
+        // Modal: abrir lista de orçamentos salvos
+        function abrirModalOrcamentos() {
+            atualizarListaOrcamentos();
+            document.getElementById("modalOrcamentos").style.display = "flex";
+        }
+        function fecharModalOrcamentos() {
+            document.getElementById("modalOrcamentos").style.display = "none";
+        }
+
+        // Atualizar lista orçamentos salvos
+        function atualizarListaOrcamentos() {
+            const tbody = document.getElementById("listaOrcamentos");
+            tbody.innerHTML = "";
+            const orcamentos = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(ORCAMENTO_PREFIX)) {
+                    try {
+                        orcamentos.push(JSON.parse(localStorage.getItem(key)));
+                    } catch (e) {
+                        console.error("Erro ao parsear orçamento do localStorage:", e, "Key:", key);
+                    }
+                }
+            }
+
+            // Opcional: Ordenar orçamentos por número ou data
+            orcamentos.sort((a, b) => {
+                // Exemplo de ordenação por número de orçamento (parte numérica)
+                const numA = parseInt(a.numero.split('/')[0]);
+                const numB = parseInt(b.numero.split('/')[0]);
+                const anoA = parseInt(a.numero.split('/')[1]);
+                const anoB = parseInt(b.numero.split('/')[1]);
+
+                if (anoA !== anoB) return anoB - anoA; // Mais recente primeiro
+                return numB - numA; // Maior número primeiro
+            });
+
+
+            orcamentos.forEach((orc) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${orc.numero}</td>
+                    <td>${orc.cliente}</td>
+                    <td>${new Date(orc.data).toLocaleDateString("pt-BR")}</td>
+                    <td>
+                        <button class="btn" onclick='editarOrcamento("${orc.numero}")'>Editar</button>
+                        <button class="btn btn-danger" onclick='excluirOrcamento("${orc.numero}")'>Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Editar orçamento
+        function editarOrcamento(numero) {
+            fecharModalOrcamentos();
+            const orc = JSON.parse(localStorage.getItem(`${ORCAMENTO_PREFIX}${numero}`));
+            if (!orc) {
+                alert("Orçamento não encontrado.");
+                return;
+            }
+            document.getElementById("numero").value = orc.numero;
+            document.getElementById("data").value = orc.data;
+            document.getElementById("validade").value = orc.validadeDias;
+            document.getElementById("cliente").value = orc.cliente;
+            document.getElementById("doc").value = formatarCpfCnpj(orc.doc); // Formata ao carregar (DOC armazenado puro)
+            document.getElementById("endereco").value = orc.endereco;
+            document.getElementById("telefone").value = formatarTelefone(orc.telefone); // Formata ao carregar (Telefone armazenado puro)
+            document.getElementById("email").value = orc.email;
+            document.getElementById("formaPagamento").value = orc.formaPagamento || "";
+            document.getElementById("observacoes").value = orc.observacoes;
+
+            // Preenche itens
+            const tbody = document.querySelector("#itens tbody");
+            tbody.innerHTML = "";
+            if (orc.itens && orc.itens.length > 0) {
+                orc.itens.forEach((item) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td></td>
+                        <td><input type="text" class="descricao" value="${item.descricao}" /></td>
+                        <td><input type="number" class="qtde" value="${item.qtde}" min="1" step="1" /></td>
+                        <td><input type="number" class="valor" value="${item.valor.toFixed(2)}" min="0" step="0.01" /></td> <td class="subtotal">0,00</td>
+                        <td><button class="btn-danger" title="Remover item" onclick="removerItem(this)">🗑️</button></td>
+                    `;
+                    tbody.appendChild(row);
+                    row.querySelectorAll(".qtde, .valor").forEach((input) => {
+                        input.addEventListener("input", atualizarTotais);
+                        if (input.classList.contains('valor')) {
+                            input.addEventListener("blur", function() {
+                                this.value = formatarValorUnitario(this.value);
+                            });
+                            this.value = formatarValorUnitario(this.value);
+                        }
+                    });
+                });
+            } else {
+                adicionarItem(); // Adiciona um item vazio se não houver itens salvos
+            }
+            atualizarIndices();
+            atualizarTotais();
+            document.getElementById("orcamento").style.display = "none";
+        }
+
+        // Excluir orçamento
+        function excluirOrcamento(numero) {
+            if (confirm(`Tem certeza que deseja excluir o orçamento nº ${numero}?`)) {
+                localStorage.removeItem(`${ORCAMENTO_PREFIX}${numero}`);
+                atualizarListaOrcamentos();
+                mostrarMensagem("🗑️ Orçamento excluído com sucesso!");
+                // Opcional: Limpar formulário se o orçamento excluído for o que está sendo exibido
+                if (document.getElementById("numero").value === numero) {
+                    novoOrcamento();
+                }
+            }
+        }
+
+        // Modal novo cliente
+        function abrirModalNovoCliente() {
+            // Limpa os campos do modal ao abrir
+            document.getElementById("clienteNome").value = "";
+            document.getElementById("clienteDoc").value = "";
+            document.getElementById("clienteEndereco").value = "";
+            document.getElementById("clienteTelefone").value = "";
+            document.getElementById("clienteEmail").value = "";
+            document.getElementById("modalNovoCliente").style.display = "flex";
+        }
+        function fecharModalNovoCliente() {
+            document.getElementById("modalNovoCliente").style.display = "none";
+        }
+
+        // Salvar cliente
+        function salvarCliente() {
+            const nome = document.getElementById("clienteNome").value.trim();
+            let docInputVal = document.getElementById("clienteDoc").value.trim();
+            let docPuro = docInputVal.replace(/\D/g, ""); // Salva apenas números
+
+            const endereco = document.getElementById("clienteEndereco").value.trim();
+            const telefoneInputVal = document.getElementById("clienteTelefone").value.trim();
+            const telefonePuro = telefoneInputVal.replace(/\D/g, ""); // Salva apenas números
+            const email = document.getElementById("clienteEmail").value.trim();
+
+            if (!nome) {
+                mostrarMensagem("🚨 Por favor, preencha o nome do cliente.");
+                return;
+            }
+
+            if (email && !/\S+@\S+\.\S+/.test(email)) {
+                mostrarMensagem("🚨 Por favor, insira um endereço de e-mail válido.");
+                return;
+            }
+
+            let keyToUse = docPuro;
+            let storedDocValue = docPuro; // O valor que será armazenado como 'doc' no objeto cliente
+
+            if (docPuro) {
+                const existingClient = localStorage.getItem(`${CLIENTE_PREFIX}${docPuro}`);
+                if (existingClient) {
+                    if (!confirm(`Um cliente com o CPF/CNPJ ${formatarCpfCnpj(docPuro)} já existe. Deseja atualizar os dados?`)) {
+                        return;
+                    }
+                }
+            } else {
+                // Se o CPF/CNPJ não for informado, crie uma chave única para o localStorage
+                // e defina storedDocValue como vazio para o objeto cliente.
+                keyToUse = `NO_DOC_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                storedDocValue = ""; // O 'doc' no objeto cliente será vazio
+            }
+
+            localStorage.setItem(`${CLIENTE_PREFIX}${keyToUse}`, JSON.stringify({ nome, doc: storedDocValue, endereco, telefone: telefonePuro, email }));
+
+            mostrarMensagem("👤 Cliente salvo com sucesso!");
+            fecharModalNovoCliente();
+
+            document.getElementById("cliente").value = nome;
+            document.getElementById("doc").value = storedDocValue ? formatarCpfCnpj(storedDocValue) : ''; // Use storedDocValue para preencher
+            document.getElementById("endereco").value = endereco;
+            document.getElementById("telefone").value = telefonePuro ? formatarTelefone(telefonePuro) : '';
+            document.getElementById("email").value = email;
+            atualizarListaClientes();
+        }
+
+        // Modal buscar cliente
+        function abrirModalBuscarCliente() {
+            atualizarListaClientes();
+            document.getElementById("modalBuscarCliente").style.display = "flex";
+        }
+        function fecharModalBuscarCliente() {
+            document.getElementById("modalBuscarCliente").style.display = "none";
+        }
+
+        // Atualizar lista clientes
+        function atualizarListaClientes() {
+            const tbody = document.getElementById("listaClientes");
+            tbody.innerHTML = "";
+            const clientes = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(CLIENTE_PREFIX)) {
+                    try {
+                        const clienteData = JSON.parse(localStorage.getItem(key));
+                        // Garante que a chave de seleção seja a chave original do localStorage
+                        clienteData.localStorageKey = key.replace(CLIENTE_PREFIX, ''); 
+                        clientes.push(clienteData);
+                    } catch (e) {
+                        console.error("Erro ao parsear cliente do localStorage:", e, "Key:", key);
+                    }
+                }
+            }
+
+            // Ordenar clientes por nome
+            clientes.sort((a, b) => a.nome.localeCompare(b.nome));
+
+            clientes.forEach((cliente) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${cliente.nome}</td>
+                    <td>${cliente.doc ? formatarCpfCnpj(cliente.doc) : 'Não informado'}</td>
+                    <td>${cliente.telefone ? formatarTelefone(cliente.telefone) : 'Não informado'}</td>
+                    <td>${cliente.email || 'Não informado'}</td>
+                    <td>
+                        <button class="btn" onclick='selecionarCliente("${cliente.localStorageKey}")'>Selecionar</button>
+                        <button class="btn btn-danger" onclick='excluirCliente("${cliente.localStorageKey}")'>Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Selecionar cliente da lista para preencher o formulário
+        function selecionarCliente(localStorageKey) { // localStorageKey é a chave original usada no localStorage
+            const cliente = JSON.parse(localStorage.getItem(`${CLIENTE_PREFIX}${localStorageKey}`));
+            
+            if (!cliente) {
+                alert("Cliente não encontrado.");
+                return;
+            }
+            document.getElementById("cliente").value = cliente.nome;
+            // Se o DOC for vazio ou uma chave gerada (NO_DOC_), não preenche o campo de DOC no formulário principal
+            document.getElementById("doc").value = cliente.doc ? formatarCpfCnpj(cliente.doc) : ''; 
+            document.getElementById("endereco").value = cliente.endereco;
+            document.getElementById("telefone").value = cliente.telefone ? formatarTelefone(cliente.telefone) : '';
+            document.getElementById("email").value = cliente.email;
+            fecharModalBuscarCliente();
+        }
+
+        // Excluir cliente
+        function excluirCliente(localStorageKey) { // localStorageKey é a chave original usada no localStorage
+            const clienteParaExcluir = JSON.parse(localStorage.getItem(`${CLIENTE_PREFIX}${localStorageKey}`));
+            if (!clienteParaExcluir) {
+                alert("Cliente não encontrado para exclusão.");
+                return;
+            }
+
+            if (confirm(`Tem certeza que deseja excluir o cliente "${clienteParaExcluir.nome}"?`)) {
+                localStorage.removeItem(`${CLIENTE_PREFIX}${localStorageKey}`);
+                atualizarListaClientes();
+                mostrarMensagem("❌ Cliente excluído com sucesso!");
+                // Opcional: Limpar campos do cliente no formulário principal se for o cliente atual
+                const currentDocInForm = document.getElementById("doc").value.replace(/\D/g, "");
+                // Verifica se o DOC do formulário é o que está sendo excluído ou se o nome do cliente no formulário é igual ao excluído
+                if ((clienteParaExcluir.doc && currentDocInForm === clienteParaExcluir.doc) || 
+                   (!clienteParaExcluir.doc && document.getElementById("cliente").value === clienteParaExcluir.nome)) {
+                    document.getElementById("cliente").value = "";
+                    document.getElementById("doc").value = "";
+                    document.getElementById("endereco").value = "";
+                    document.getElementById("telefone").value = "";
+                    document.getElementById("email").value = "";
+                }
+            }
+        }
+
+
+        // Função para formatar CPF/CNPJ (recebe PURO, retorna FORMATADO)
+        function formatarCpfCnpj(value) {
+            if (!value) return '';
+            let v = value.replace(/\D/g, ""); // Garante que a entrada é só números
+            if (v.length <= 11) {
+                // CPF
+                v = v
+                    .replace(/^(\d{3})(\d)/, "$1.$2")
+                    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+                    .replace(/\.(\d{3})(\d)/, ".$1-$2");
+            } else {
+                // CNPJ
+                v = v
+                    .replace(/^(\d{2})(\d)/, "$1.$2")
+                    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+                    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+                    .replace(/(\d{4})(\d)/, "$1-$2");
+            }
+            return v;
+        }
+
+        // Máscara para CPF/CNPJ no input doc principal
+        const docInput = document.getElementById("doc");
+        docInput.addEventListener("input", function () {
+            this.value = formatarCpfCnpj(this.value); // Formata o que o usuário digita
+        });
+
+        // Máscara para CPF/CNPJ no modal de novo cliente
+        const clienteDocInput = document.getElementById("clienteDoc");
+        clienteDocInput.addEventListener("input", function () {
+            this.value = formatarCpfCnpj(this.value); // Formata o que o usuário digita
+        });
+
+        // Máscara para telefone (recebe PURO, retorna FORMATADO)
+        function formatarTelefone(value) {
+            if (!value) return '';
+            let v = value.replace(/\D/g, ""); // Garante que a entrada é só números
+            if (v.length > 10) { // Celular com DDD
+                v = v.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3");
+            } else if (v.length > 6) { // Telefone fixo ou celular sem 9
+                v = v.replace(/^(\d\d)(\d{4})(\d{4}).*/, "($1) $2-$3");
+            } else if (v.length > 2) { // Apenas DDD
+                v = v.replace(/^(\d\d)(\d)/, "($1) $2");
+            }
+            return v;
+        }
+
+        const telefoneInput = document.getElementById("telefone");
+        telefoneInput.addEventListener("input", function() {
+            this.value = formatarTelefone(this.value); // Formata o que o usuário digita
+        });
+
+        const clienteTelefoneInput = document.getElementById("clienteTelefone");
+        clienteTelefoneInput.addEventListener("input", function() {
+            this.value = formatarTelefone(this.value); // Formata o que o usuário digita
+        });
+
+        // Função para formatar o valor unitário ao sair do campo (para 2 casas decimais)
+        function formatarValorUnitario(value) {
+            let floatValue = parseFloat(value);
+            if (isNaN(floatValue)) {
+                floatValue = 0;
+            }
+            return floatValue.toFixed(2); // Garante 2 casas decimais
+        }
+
+
+        // Inicializa formulário com novo orçamento ao carregar a página
+        window.onload = novoOrcamento;
+
+        // Busca dinâmica no modal orçamentos
+        document.getElementById("buscaOrcamento").addEventListener("input", function () {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll("#listaOrcamentos tr");
+            linhas.forEach((linha) => {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(filtro) ? "" : "none";
+            });
+        });
+
+        // Busca dinâmica no modal clientes
+        document.getElementById("buscaCliente").addEventListener("input", function () {
+            const filtro = this.value.toLowerCase();
+            const linhas = document.querySelectorAll("#listaClientes tr");
+            linhas.forEach((linha) => {
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(filtro) ? "" : "none";
+            });
+        });
+    
+function mostrarMensagem(texto) {
+    const msg = document.getElementById("mensagem-alerta");
+    if (!msg) return;
+
+    msg.textContent = texto;
+    msg.style.display = "block";
+    msg.style.opacity = "0"; // Garante que começa transparente para a transição funcionar
+
+    // Força o reflow/repaint para que a transição de opacidade funcione
+    // ao alterar de display: none para block e depois a opacidade.
+    void msg.offsetWidth;
+
+    msg.style.opacity = "1"; // Inicia a transição para visível
+
+    setTimeout(() => {
+        msg.style.opacity = "0"; // Inicia a transição para invisível
+        setTimeout(() => {
+            msg.style.display = "none"; // Esconde o elemento completamente após a transição
+        }, 500); // Tempo da transição de opacidade (deve ser o mesmo do CSS)
+    }, 3000); // Tempo que a mensagem fica visível (3 segundos)
+}
+
+</script>
+</body>
+</html>
