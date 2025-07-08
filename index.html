@@ -363,11 +363,193 @@
     font-size: 12px; /* Linha de total menor */
 }
 
-/* Certifique-se de que o ID da tabela no orçamento gerado seja #itens-lista-pdf
-   Se for outro ID, ajuste o seletor acima. */
-/* Se a descrição não for o td:nth-child(2), você precisará ajustar o seletor.
-   Idealmente, se a geração do HTML para #orcamento puder adicionar uma classe
-   como "descricao-coluna" ao <td> da descrição, seria mais robusto. */
+/* --- INÍCIO: ESTILOS PARA RESPONSIVIDADE (MOBILE FIRST OU ESPECÍFICOS) --- */
+
+/* Ajustes gerais para telas menores que 768px (Tablets e Celulares) */
+@media (max-width: 768px) {
+    body {
+        margin: 10px; /* Reduz a margem geral do corpo */
+    }
+
+    h1 {
+        font-size: 24px; /* Títulos menores */
+        margin-bottom: 20px;
+    }
+
+    .section {
+        padding: 15px; /* Reduz o padding das seções */
+        margin-bottom: 15px;
+    }
+
+    .section h2 {
+        font-size: 20px; /* Títulos de seção menores */
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+    /* Layout do cabeçalho da empresa (logo e informações) */
+    .header-fixed {
+        flex-direction: column; /* Coloca a logo e informações em coluna */
+        align-items: flex-start; /* Alinha tudo à esquerda */
+        gap: 10px; /* Reduz o espaço entre eles */
+        padding-bottom: 10px;
+    }
+
+    .logo {
+        width: 100px; /* Diminui o tamanho da logo */
+    }
+
+    .header-fixed .info {
+        text-align: left; /* Garante alinhamento à esquerda */
+        font-size: 13px; /* Fonte ligeiramente menor para as informações */
+    }
+    .header-fixed p {
+        font-size: 13px;
+        margin: 1px 0; /* Menos margem entre os parágrafos */
+    }
+
+
+    /* Campos de input em flex-row */
+    .flex-row {
+        flex-direction: column; /* Faz com que os itens se empilhem */
+        gap: 15px; /* Ajusta o espaço entre os itens empilhados */
+    }
+
+    .flex-row > div {
+        flex: 1 1 100%; /* Cada div ocupa a largura total disponível */
+    }
+
+    /* Inputs e textareas */
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="email"],
+    textarea {
+        font-size: 13px; /* Diminui a fonte dos inputs */
+        padding: 10px; /* Ajusta o padding */
+    }
+
+    /* Botões */
+    .btn, .btn-danger {
+        padding: 10px 15px; /* Ajusta o padding dos botões */
+        font-size: 13px; /* Diminui a fonte dos botões */
+        margin-top: 10px; /* Margem superior para botões */
+    }
+
+    /* Alerta de mensagem */
+    #mensagem-alerta {
+        max-width: 90%; /* Limita a largura da mensagem para não ultrapassar a tela */
+        left: 5%; /* Centraliza horizontalmente */
+        right: 5%;
+        margin: 0 auto;
+    }
+}
+
+
+/* Ajustes mais específicos para Celulares (largura máxima de 480px) */
+@media (max-width: 480px) {
+    /* Ajustes para tabelas: Essa é a parte mais chata! */
+    /* Uma abordagem comum é fazer as tabelas "roláveis" ou "empilháveis" */
+    #itens,
+    #modalOrcamentos table,
+    #modalBuscarCliente table {
+        display: block; /* Transforma a tabela em um bloco */
+        overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se o conteúdo for muito largo */
+        white-space: nowrap; /* Impede que o conteúdo da célula quebre linha */
+        width: 100%; /* Garante que ocupe a largura total disponível */
+    }
+
+    #itens thead,
+    #modalOrcamentos thead,
+    #modalBuscarCliente thead {
+        display: block; /* Também transforma o cabeçalho em bloco */
+        white-space: nowrap;
+    }
+
+    #itens tbody,
+    #modalOrcamentos tbody,
+    #modalBuscarCliente tbody {
+        display: block; /* Transforma o corpo da tabela em bloco */
+    }
+
+    #itens tr,
+    #modalOrcamentos tr,
+    #modalBuscarCliente tr {
+        display: inline-table; /* Cada linha se torna uma "tabela" para empilhar */
+        width: 100%; /* Ocupa a largura total */
+        border: 1px solid #eee; /* Adiciona borda para separar as "linhas" */
+        margin-bottom: 8px; /* Espaço entre as "linhas" */
+        vertical-align: top; /* Alinha o conteúdo ao topo */
+    }
+
+    #itens th,
+    #itens td,
+    #modalOrcamentos th,
+    #modalOrcamentos td,
+    #modalBuscarCliente th,
+    #modalBuscarCliente td {
+        display: block; /* Cada célula ocupa uma linha completa */
+        width: 100% !important; /* Garante que ocupem a largura total */
+        box-sizing: border-box;
+        text-align: left !important; /* Alinha texto à esquerda */
+        padding: 8px 10px; /* Ajusta padding */
+        border: none; /* Remove bordas internas */
+    }
+
+    /* Adiciona labels para as células em mobile */
+    /* Você precisaria de JavaScript para adicionar data-labels ou usar pseudo-elementos */
+    /* Exemplo:
+    #itens td:nth-of-type(1):before { content: "Nº: "; font-weight: bold; }
+    #itens td:nth-of-type(2):before { content: "Descrição: "; font-weight: bold; }
+    #itens td:nth-of-type(3):before { content: "Qtde: "; font-weight: bold; }
+    #itens td:nth-of-type(4):before { content: "Valor Unit.: "; font-weight: bold; }
+    #itens td:nth-of-type(5):before { content: "Subtotal: "; font-weight: bold; }
+    #itens td:nth-of-type(6):before { content: "Ações: "; font-weight: bold; }
+    */
+
+    /* Ajustes específicos para inputs dentro das células da tabela (em mobile) */
+    #itens td input {
+        width: calc(100% - 20px); /* Ajusta a largura para caber no padding da célula */
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    /* Total geral */
+    .total-display {
+        text-align: center; /* Centraliza o total em mobile */
+        font-size: 16px;
+    }
+
+    /* Modais */
+    .modal-content {
+        width: 95%; /* Ocupa mais largura em telas pequenas */
+        margin: 10px; /* Adiciona margem para não colar nas bordas */
+        padding: 15px;
+    }
+
+    .modal-close {
+        top: 8px;
+        right: 8px;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+
+    .modal table .btn, .modal table .btn-danger {
+        width: auto; /* Botões menores podem ficar em linha se houver espaço */
+        display: inline-block;
+        margin: 2px;
+    }
+    
+    /* Alinhamento dos botões de ação nos modais de lista de orçamentos/clientes */
+    #modalOrcamentos td:last-child,
+    #modalBuscarCliente td:last-child {
+        width: auto !important; /* Remove largura fixa */
+        text-align: center; /* Centraliza os botões */
+    }
+}
+
+/* --- FIM: ESTILOS PARA RESPONSIVIDADE --- */
 </style>
 </head>
 <body>
