@@ -571,7 +571,22 @@
         text-align: center; /* Centraliza os botões */
     }
 }
-
+/* Estilo para a descrição expandida */
+.descricao-expandida {
+    width: 250px !important; /* Ajuste a largura conforme necessário */
+    min-width: 250px !important; /* Garante que não encolha em telas menores */
+    height: 80px; /* Aumenta a altura para multi-linhas */
+    resize: vertical; /* Permite redimensionar verticalmente se o navegador permitir */
+    position: absolute; /* Para que não empurre os outros elementos */
+    background-color: white; /* Garante que o fundo seja branco */
+    border: 2px solid #2a75bb; /* Borda destacada */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra para destacá-lo */
+    z-index: 1000; /* Garante que ele fique acima de outros elementos */
+    left: 50%; /* Tenta centralizar horizontalmente */
+    transform: translateX(-50%); /* Ajuste fino para centralização */
+    top: auto; /* Deixa o top ser ajustado pelo JS ou padrão */
+}
+        
 /* --- FIM: ESTILOS PARA RESPONSIVIDADE --- */
 </style>
 </head>
@@ -822,6 +837,10 @@
             `;
             tbody.appendChild(row);
 
+            // Anexa os eventos de expansão ao input de descrição recém-criado
+            const descricaoInput = row.querySelector(".descricao");
+            anexarEventosDescricao(descricaoInput);
+
             // Adiciona eventos para atualizar subtotal e total ao alterar
             row.querySelectorAll(".qtde, .valor").forEach((input) => {
                 input.addEventListener("input", atualizarTotais);
@@ -836,6 +855,36 @@
             });
             atualizarTotais();
         }
+
+        // Função para anexar eventos de expansão/minimização aos campos de descrição
+        function anexarEventosDescricao(inputElement) {
+            inputElement.addEventListener("focus", function() {
+                this.classList.add("descricao-expandida");
+                // Ajusta a posição vertical do campo expandido
+                const rect = this.getBoundingClientRect();
+                // Calcula o scroll atual da página
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                // Posição desejada: 20px abaixo do topo do viewport, ou manter na tela
+                let topPosition = rect.top + scrollTop - 20;
+        
+                // Limita a posição superior para que o campo não saia muito da tela para cima
+                if (topPosition < scrollTop) {
+                    topPosition = scrollTop + 10; // 10px de margem do topo da tela
+                }
+                this.style.top = `${topPosition}px`;
+            });
+        
+            inputElement.addEventListener("blur", function() {
+                this.classList.remove("descricao-expandida");
+                this.style.top = ''; // Remove o estilo top para voltar ao normal
+                this.style.left = ''; // Remove o estilo left
+                this.style.transform = ''; // Remove o transform
+            });
+        }
+        
+        // Chamar a função para os inputs existentes e futuros
+        // Modifique a função 'adicionarItem' para chamar 'anexarEventosDescricao'
+        // E modifique 'editarOrcamento' também.
 
         // Remove item da tabela
         function removerItem(btn) {
@@ -1192,6 +1241,9 @@ function atualizarTotais() {
                         <td><button class="btn-danger" title="Remover item" onclick="removerItem(this)">🗑️</button></td>
                     `;
                     tbody.appendChild(row);
+                    // Anexa os eventos de expansão ao input de descrição ao editar
+                    const descricaoInput = row.querySelector(".descricao");
+                    anexarEventosDescricao(descricaoInput);
                     row.querySelectorAll(".qtde, .valor").forEach((input) => {
                         input.addEventListener("input", atualizarTotais);
                         if (input.classList.contains('valor')) {
