@@ -586,7 +586,14 @@
     transform: translateX(-50%); /* Ajuste fino para centralização */
     top: auto; /* Deixa o top ser ajustado pelo JS ou padrão */
 }
-        
+
+/* Garante que o textarea da descrição na tabela tenha a altura normal quando não expandido */
+#itens td textarea.descricao {
+    min-height: 30px; /* Altura mínima adequada para a textarea na tabela */
+    height: auto; /* Altura automática baseada no conteúdo, se não expandida */
+    overflow-y: hidden; /* Esconde barra de rolagem quando não expandido */
+}
+
 /* --- FIM: ESTILOS PARA RESPONSIVIDADE --- */
 </style>
 </head>
@@ -830,7 +837,7 @@
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${index}</td>
-                <td><input type="text" class="descricao" placeholder="Descrição do item" /></td>
+                <td><textarea class="descricao" placeholder="Descrição do item"></textarea></td>
                 <td><input type="number" class="qtde" value="1" min="1" step="1" /></td>
                 <td><input type="number" class="valor" value="0.00" min="0" step="0.01" /></td> <td class="subtotal">R$ 0,00</td>
                 <td><button class="btn-danger" title="Remover item" onclick="removerItem(this)">🗑️</button></td>
