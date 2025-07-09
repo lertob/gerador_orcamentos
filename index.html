@@ -570,29 +570,55 @@
         width: auto !important; /* Remove largura fixa */
         text-align: center; /* Centraliza os botões */
     }
-}
-/* Estilo para a descrição expandida */
-.descricao-expandida {
-    width: 250px !important; /* Ajuste a largura conforme necessário */
-    min-width: 250px !important; /* Garante que não encolha em telas menores */
-    height: 80px; /* Aumenta a altura para multi-linhas */
-    resize: vertical; /* Permite redimensionar verticalmente se o navegador permitir */
-    position: absolute; /* Para que não empurre os outros elementos */
-    background-color: white; /* Garante que o fundo seja branco */
-    border: 2px solid #2a75bb; /* Borda destacada */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra para destacá-lo */
-    z-index: 1000; /* Garante que ele fique acima de outros elementos */
-    left: 50%; /* Tenta centralizar horizontalmente */
-    transform: translateX(-50%); /* Ajuste fino para centralização */
-    top: auto; /* Deixa o top ser ajustado pelo JS ou padrão */
+/* --- INÍCIO NOVO/ATUALIZADO: CSS para Modal de Descrição e Textarea --- */
+
+/* Estilos para o Modal de Edição de Descrição */
+#descricaoModal .modal-content {
+    max-width: 90%; /* Ajuste a largura máxima para caber bem em celulares */
+    width: 400px; /* Largura padrão para desktop */
+    padding: 25px;
 }
 
-/* Garante que o textarea da descrição na tabela tenha a altura normal quando não expandido */
+#descricaoModalTextarea {
+    width: 100%;
+    height: 150px; /* Altura padrão da textarea no modal */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+/* IMPORTANTE: Remova a classe .descricao-expandida se ela estiver aqui */
+/* .descricao-expandida { ... REMOVER ESTE BLOCO ... } */
+
+/* Estilo para a textarea da descrição na tabela, quando NÃO está no modal */
 #itens td textarea.descricao {
     min-height: 30px; /* Altura mínima adequada para a textarea na tabela */
     height: auto; /* Altura automática baseada no conteúdo, se não expandida */
     overflow-y: hidden; /* Esconde barra de rolagem quando não expandido */
+    /* Garante que o padding e bordas sejam incluídos na largura/altura */
+    box-sizing: border-box;
+    /* Alinha o texto ao topo, caso haja pouco conteúdo */
+    vertical-align: top;
 }
+
+/* Media Query para responsividade do modal em telas menores */
+@media (max-width: 600px) {
+    #descricaoModal .modal-content {
+        width: 90%; /* Ajusta para preencher mais a tela em celulares */
+        padding: 15px;
+    }
+    #descricaoModalTextarea {
+        height: 120px; /* Um pouco menor em telas muito pequenas */
+        font-size: 13px;
+    }
+}
+/* --- FIM NOVO/ATUALIZADO: CSS para Modal de Descrição e Textarea --- */
+
 
 /* --- FIM: ESTILOS PARA RESPONSIVIDADE --- */
 </style>
@@ -787,7 +813,69 @@
         </div>
     </div>
 
+    <div id="descricaoModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="fecharDescricaoModal()">&times;</span>
+        <h2>Editar Descrição</h2>
+        <textarea id="descricaoModalTextarea" rows="10" placeholder="Digite a descrição completa aqui..."></textarea>
+        <button class="btn" onclick="fecharDescricaoModal()">Salvar e Fechar</button>
+    </div>
+    </div>
+
     <script>
+
+        // --- INÍCIO NOVO: Variável Global e Funções do Modal de Descrição ---
+        
+        // Variável global para armazenar a referência ao textarea de descrição atualmente ativo
+        let currentDescriptionTextarea = null;
+        
+        // Função para abrir o modal de edição da descrição
+        function abrirDescricaoModal(textareaElement) {
+            currentDescriptionTextarea = textareaElement; // Armazena a referência do textarea clicado
+            const descricaoModal = document.getElementById("descricaoModal");
+            const descricaoModalTextarea = document.getElementById("descricaoModalTextarea");
+        
+            descricaoModalTextarea.value = currentDescriptionTextarea.value; // Copia o conteúdo para o modal
+            descricaoModal.style.display = "block"; // Mostra o modal
+        
+            // Opcional: foca o textarea dentro do modal imediatamente
+            setTimeout(() => {
+                descricaoModalTextarea.focus();
+            }, 100);
+        
+            // IMPORTANTE: Tenta tirar o foco do campo original para fechar o teclado virtual no celular
+            // Isso é um hack, pode não funcionar em todos os navegadores/teclados, mas vale a pena tentar.
+            if (textareaElement && typeof textareaElement.blur === 'function') {
+                textareaElement.blur();
+            }
+        }
+        
+        // Função para fechar o modal de edição da descrição
+        function fecharDescricaoModal() {
+            const descricaoModal = document.getElementById("descricaoModal");
+            const descricaoModalTextarea = document.getElementById("descricaoModalTextarea");
+        
+            if (currentDescriptionTextarea) {
+                currentDescriptionTextarea.value = descricaoModalTextarea.value; // Copia o conteúdo de volta para o original
+                currentDescriptionTextarea = null; // Limpa a referência
+            }
+        
+            descricaoModal.style.display = "none"; // Esconde o modal
+        }
+        
+        // Opcional: Fechar modal ao clicar fora (no overlay do modal)
+        document.addEventListener('DOMContentLoaded', () => {
+            const descricaoModal = document.getElementById('descricaoModal');
+            if (descricaoModal) { // Verifica se o modal existe antes de adicionar o listener
+                descricaoModal.addEventListener('click', (event) => {
+                    if (event.target === descricaoModal) { // Se o clique foi no fundo do modal (overlay)
+                        fecharDescricaoModal();
+                    }
+                });
+            }
+        });
+        
+        // --- FIM NOVO: Variável Global e Funções do Modal de Descrição ---
         // Constantes para chaves do localStorage
         const ORCAMENTO_PREFIX = "orcamento_";
         const CLIENTE_PREFIX = "cliente_";
@@ -845,8 +933,8 @@
             tbody.appendChild(row);
 
             // Anexa os eventos de expansão ao input de descrição recém-criado
-            const descricaoInput = row.querySelector(".descricao");
-            anexarEventosDescricao(descricaoInput);
+            const descricaoTextarea = row.querySelector(".descricao");
+            anexarEventosDescricao(descricaoTextarea);
 
             // Adiciona eventos para atualizar subtotal e total ao alterar
             row.querySelectorAll(".qtde, .valor").forEach((input) => {
@@ -863,31 +951,19 @@
             atualizarTotais();
         }
 
-        // Função para anexar eventos de expansão/minimização aos campos de descrição
-        function anexarEventosDescricao(inputElement) {
-            inputElement.addEventListener("focus", function() {
-                this.classList.add("descricao-expandida");
-                // Ajusta a posição vertical do campo expandido
-                const rect = this.getBoundingClientRect();
-                // Calcula o scroll atual da página
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                // Posição desejada: 20px abaixo do topo do viewport, ou manter na tela
-                let topPosition = rect.top + scrollTop - 20;
-        
-                // Limita a posição superior para que o campo não saia muito da tela para cima
-                if (topPosition < scrollTop) {
-                    topPosition = scrollTop + 10; // 10px de margem do topo da tela
-                }
-                this.style.top = `${topPosition}px`;
+        // --- INÍCIO ATUALIZADO: Função para anexar eventos de descrição ---
+        // Função para anexar eventos de abertura do modal de descrição aos campos de descrição
+        function anexarEventosDescricao(textareaElement) {
+            textareaElement.addEventListener("focus", function() {
+                // Quando o campo é focado, abre o modal de edição
+                abrirDescricaoModal(this);
             });
         
-            inputElement.addEventListener("blur", function() {
-                this.classList.remove("descricao-expandida");
-                this.style.top = ''; // Remove o estilo top para voltar ao normal
-                this.style.left = ''; // Remove o estilo left
-                this.style.transform = ''; // Remove o transform
-            });
+            // O evento 'blur' no campo original não é mais necessário aqui,
+            // pois o modal gerencia a edição e salvamento ao ser fechado.
+            // Opcionalmente, se houver um 'blur' handler antigo, pode removê-lo aqui.
         }
+        // --- FIM ATUALIZADO: Função para anexar eventos de descrição ---
         
         // Chamar a função para os inputs existentes e futuros
         // Modifique a função 'adicionarItem' para chamar 'anexarEventosDescricao'
@@ -1242,15 +1318,15 @@ function atualizarTotais() {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td></td>
-                        <td><input type="text" class="descricao" value="${item.descricao}" /></td>
+                        <td><textarea class="descricao">${item.descricao}</textarea></td>
                         <td><input type="number" class="qtde" value="${item.qtde}" min="1" step="1" /></td>
                         <td><input type="number" class="valor" value="${item.valor.toFixed(2)}" min="0" step="0.01" /></td> <td class="subtotal">0,00</td>
                         <td><button class="btn-danger" title="Remover item" onclick="removerItem(this)">🗑️</button></td>
                     `;
                     tbody.appendChild(row);
                     // Anexa os eventos de expansão ao input de descrição ao editar
-                    const descricaoInput = row.querySelector(".descricao");
-                    anexarEventosDescricao(descricaoInput);
+                    const descricaoTextarea = row.querySelector(".descricao");
+                    anexarEventosDescricao(descricaoTextarea);
                     row.querySelectorAll(".qtde, .valor").forEach((input) => {
                         input.addEventListener("input", atualizarTotais);
                         if (input.classList.contains('valor')) {
