@@ -447,54 +447,77 @@
 
 
 /* Ajustes mais específicos para Celulares (largura máxima de 480px) */
+/* Ajustes mais específicos para Celulares (largura máxima de 480px) */
 @media (max-width: 480px) {
-    /* Ajustes para tabelas: Essa é a parte mais chata! */
-    /* Uma abordagem comum é fazer as tabelas "roláveis" ou "empilháveis" */
+    /* Ajustes gerais de layout para caber melhor na tela */
+    .section {
+        padding: 10px; /* Reduz ainda mais o padding das seções */
+    }
+
+    /* Input de busca nos modais */
+    .modal-content input[type="text"] {
+        padding: 10px; /* Garante que o padding seja bom em mobile */
+        font-size: 14px;
+    }
+
+    /* Responsividade para TODAS as tabelas (Itens do Orçamento, Orçamentos Salvos, Buscar Clientes) */
+    /* Esta é a abordagem de rolagem horizontal, que é a mais robusta para tabelas complexas */
     #itens,
     #modalOrcamentos table,
-    #modalBuscarCliente table {
-        display: block; /* Transforma a tabela em um bloco */
-        overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se o conteúdo for muito largo */
-        white-space: nowrap; /* Impede que o conteúdo da célula quebre linha */
-        width: 100%; /* Garante que ocupe a largura total disponível */
+    #modalBuscarCliente table,
+    #orcamento table /* IMPORTANTE: Inclui a tabela do orçamento gerado também */
+    {
+        display: block; /* Essencial para que overflow-x: auto funcione na tabela */
+        overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se a tabela for mais larga que a tela */
+        width: 100%; /* Garante que a tabela tente ocupar 100% da largura disponível */
+        -webkit-overflow-scrolling: touch; /* Melhora a rolagem em dispositivos iOS */
+        border-collapse: collapse; /* Mantém as bordas unidas para um visual limpo */
+        /* Remova white-space: nowrap do elemento pai da tabela, se existir */
     }
 
-    #itens thead,
-    #modalOrcamentos thead,
-    #modalBuscarCliente thead {
-        display: block; /* Também transforma o cabeçalho em bloco */
-        white-space: nowrap;
-    }
-
-    #itens tbody,
-    #modalOrcamentos tbody,
-    #modalBuscarCliente tbody {
-        display: block; /* Transforma o corpo da tabela em bloco */
-    }
-
-    #itens tr,
-    #modalOrcamentos tr,
-    #modalBuscarCliente tr {
-        display: inline-table; /* Cada linha se torna uma "tabela" para empilhar */
-        width: 100%; /* Ocupa a largura total */
-        border: 1px solid #eee; /* Adiciona borda para separar as "linhas" */
-        margin-bottom: 8px; /* Espaço entre as "linhas" */
-        vertical-align: top; /* Alinha o conteúdo ao topo */
-    }
-
+    /* Estilos para células de cabeçalho e corpo da tabela */
     #itens th,
     #itens td,
-    #modalOrcamentos th,
-    #modalOrcamentos td,
-    #modalBuscarCliente th,
-    #modalBuscarCliente td {
-        display: block; /* Cada célula ocupa uma linha completa */
-        width: 100% !important; /* Garante que ocupem a largura total */
-        box-sizing: border-box;
-        text-align: left !important; /* Alinha texto à esquerda */
-        padding: 8px 10px; /* Ajusta padding */
-        border: none; /* Remove bordas internas */
+    #modalOrcamentos table th,
+    #modalOrcamentos table td,
+    #modalBuscarCliente table th,
+    #modalBuscarCliente table td,
+    #orcamento table th,
+    #orcamento table td /* Inclui as células da tabela do orçamento gerado */
+    {
+        white-space: normal; /* Permite que o texto dentro das células quebre linha */
+        min-width: 70px; /* Define uma largura mínima para as colunas para evitar que fiquem espremidas demais */
+        padding: 8px 5px; /* Ajusta o padding para um tamanho menor em telas pequenas */
+        font-size: 12px; /* Fonte menor para o conteúdo da tabela */
+        /* Mantenha suas bordas e alinhamentos de texto conforme definido no CSS global, a menos que queira sobrescrever aqui */
     }
+
+    /* Ajustes para inputs dentro das células da tabela de itens (campo de entrada) */
+    #itens td input {
+        width: calc(100% - 10px); /* Ajusta a largura para caber dentro da célula com padding */
+        box-sizing: border-box; /* Garante que padding e borda sejam incluídos na largura */
+        font-size: 12px; /* Fonte menor para os inputs */
+        padding: 5px; /* Padding menor para os inputs */
+        margin: 0; /* Remove qualquer margem padrão que possa atrapalhar */
+    }
+
+    /* Alinhamento dos botões de ação nas tabelas dos modais (Buscar/Lista de Orçamentos) */
+    #modalOrcamentos th:last-child,
+    #modalOrcamentos td:last-child,
+    #modalBuscarCliente th:last-child,
+    #modalBuscarCliente td:last-child {
+        text-align: center; /* Centraliza os botões */
+        min-width: 90px; /* Garante espaço mínimo para os botões */
+    }
+
+    /* Botões dentro das tabelas (como nos modais de lista) */
+    .modal table .btn, .modal table .btn-danger {
+        padding: 6px 8px; /* Botões um pouco menores */
+        font-size: 12px;
+        margin: 2px;
+        display: inline-block; /* Permite que fiquem lado a lado se houver espaço */
+    }
+}
 
     /* Adiciona labels para as células em mobile */
     /* Você precisaria de JavaScript para adicionar data-labels ou usar pseudo-elementos */
