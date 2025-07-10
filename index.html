@@ -242,27 +242,33 @@
             text-align: center; /* Centraliza o conteúdo (botão) */
         }
     
+        /* Estilos para células da tabela para alinhar o conteúdo verticalmente */
+        #itens td {
+            vertical-align: middle; /* Alinha o conteúdo das células no meio */
+            padding-top: 5px; /* Adiciona um pequeno padding para não colar no topo */
+            padding-bottom: 5px; /* Adiciona um pequeno padding para não colar na base */
+        }
+    
         /* Estilo para a textarea da descrição na tabela */
         #itens td textarea.descricao {
-            /* Ajuste fino da altura para parecer com os inputs */
-            min-height: 28px; /* Reduzida para igualar a altura dos inputs */
-            height: 28px; /* Força a altura inicial, permite expandir */
+            height: 28px; /* Altura fixa para corresponder aos inputs */
+            min-height: 28px; /* Garante que não encolha menos que isso */
             padding: 4px; /* Ajusta o padding para ser similar aos inputs */
-            box-sizing: border-box; /* Garante que padding e bordas sejam incluídos na largura/altura */
-            vertical-align: middle; /* Alinha verticalmente no meio da célula */
+            box-sizing: border-box; /* Inclui padding e bordas na largura/altura */
+            width: 100%; /* Ocupa a largura total da célula */
             resize: vertical; /* Permite redimensionamento vertical pelo usuário */
-            width: 100%; /* Garante que o textarea ocupe a largura total da célula */
             overflow-y: hidden; /* Esconde a barra de rolagem inicialmente */
+            line-height: 20px; /* Ajusta a altura da linha do texto dentro da textarea */
         }
         
-        /* Estilo para os inputs dentro da tabela, para garantir altura uniforme */
+        /* Estilo para os inputs dentro da tabela, para garantir altura e alinhamento uniforme */
         #itens input.qtde,
         #itens input.valor {
-            min-height: 28px; /* Ajusta a altura mínima para ser igual à textarea */
-            height: 28px; /* Força a altura inicial */
+            height: 28px; /* Altura fixa para corresponder à textarea */
+            min-height: 28px; /* Garante que não encolha menos que isso */
             padding: 4px; /* Ajusta o padding para ser similar à textarea */
             box-sizing: border-box; /* Inclui padding e borda na largura/altura */
-            vertical-align: middle; /* Alinha verticalmente no meio da célula */
+            line-height: 20px; /* Ajusta a altura da linha do texto dentro do input */
         }
     
         /* Ajuste para centralizar inputs de Qtde e Valor Unitário dentro da tabela */
@@ -275,9 +281,12 @@
             width: 100%; /* Ocupa a largura total da célula */
             text-align: right; /* Alinha o texto à direita para valores */
         }
-
-        #itens input.valor {
-            width: 100px; /* Reduced width for value */
+    
+        /* Estilo para o botão de excluir na tabela */
+        #itens .btn-danger {
+            display: inline-block; /* Garante que o botão respeite o text-align de seu pai */
+            margin: 0 auto; /* Tenta centralizar blocos, mas text-align: center no pai é mais eficaz */
+            padding: 4px 8px; /* Ajusta o padding do botão para um tamanho razoável */
         }
 
         /* INÍCIO DO NOVO CSS PARA AJUSTAR OS BOTÕES E ALINHAMENTO */
