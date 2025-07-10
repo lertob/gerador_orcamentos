@@ -219,18 +219,18 @@
 
         /* Ajuste as larguras das colunas da tabela de itens */
         #itens th:nth-child(1), #itens td:nth-child(1) {
-            width: 3%; /* Coluna # (sequencial) */
+            width: 2%; /* Coluna # (sequencial) */
             text-align: center; /* Centraliza o número */
         }
         #itens th:nth-child(2), #itens td:nth-child(2) {
-            width: 55%; /* Coluna Descrição - Aumentada ainda mais */
+            width: 80%; /* Coluna Descrição - Aumentada ainda mais */
         }
         #itens th:nth-child(3), #itens td:nth-child(3) {
             width: 6%; /* Coluna Qtde - Reduzida ao máximo */
             text-align: center; /* Centraliza a quantidade */
         }
         #itens th:nth-child(4), #itens td:nth-child(4) {
-            width: 13%; /* Coluna Valor Unitário (R$) - Reduzida, mas suficiente para R$999.999,00 */
+            width: 8%; /* Coluna Valor Unitário (R$) - Reduzida, mas suficiente para R$999.999,00 */
             text-align: right; /* Alinha o valor à direita */
         }
         #itens th:nth-child(5), #itens td:nth-child(5) {
@@ -238,7 +238,7 @@
             text-align: right; /* Alinha o valor à direita */
         }
         #itens th:nth-child(6), #itens td:nth-child(6) {
-            width: 10%; /* Coluna Ações - Levemente aumentada para o botão e centralização */
+            width: 9%; /* Coluna Ações - Levemente aumentada para o botão e centralização */
             text-align: center; /* Centraliza o conteúdo (botão) */
         }
     
@@ -254,8 +254,8 @@
         #itens input,
         #itens textarea {
             font-size: 0.9em; /* Levemente reduzido para caber melhor */
-            height: 24px; /* Altura fixa e menor para todos */
-            min-height: 24px; /* Garante que não encolha menos que isso */
+            height: 20px; /* Altura fixa e menor para todos */
+            min-height: 20px; /* Garante que não encolha menos que isso */
             padding: 3px 5px; /* Reduz o padding para que o conteúdo ocupe mais espaço visual e o campo seja menor */
             box-sizing: border-box; /* Inclui padding e bordas na largura/altura */
             line-height: 18px; /* Ajusta a altura da linha do texto dentro dos campos */
@@ -263,24 +263,45 @@
             border-radius: 4px; /* Cantos arredondados */
         }
     
-        /* Estilo específico para a textarea da descrição na tabela */
         #itens td textarea.descricao {
-            width: 100%; /* Ocupa a largura total da célula */
-            resize: vertical; /* Permite redimensionamento vertical pelo usuário */
-            overflow-y: hidden; /* Esconde a barra de rolagem inicialmente */
+            height: 28px;               /* Altura exata para igualar ao input */
+            min-height: 28px;
+            max-height: 28px;
+            resize: none;               /* Impede redimensionamento manual */
+            padding: 3px 6px;
+            line-height: 1.4;
+            font-size: 14px;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            vertical-align: middle;
         }
+    
         
         /* Estilo para os inputs de Qtde e Valor dentro da tabela */
         #itens input.qtde {
-            width: 100%; /* Ocupa a largura total da célula */
-            text-align: center; /* Centraliza o texto */
+            height: 28px;
+            min-height: 28px;
+            padding: 3px 6px;
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
     
         #itens input.valor {
-            width: 100%; /* Ocupa a largura total da célula */
-            text-align: right; /* Alinha o texto à direita para valores */
+            height: 28px;
+            min-height: 28px;
+            padding: 3px 6px;
+            text-align: right;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-    
         /* Estilo para o botão de excluir na tabela */
         #itens .btn-danger {
             display: inline-block; /* Garante que o botão respeite o text-align de seu pai */
