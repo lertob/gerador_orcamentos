@@ -217,17 +217,54 @@
             margin-top: 10px;
         }
 
-        /* Adjust item table column widths */
-        #itens th:nth-child(1), #itens td:nth-child(1) { width: 5%; } /* # */
-        #itens th:nth-child(2), #itens td:nth-child(2) { width: 15%; } /* Descrição */
-        #itens th:nth-child(3), #itens td:nth-child(3) { width: 10%; } /* Qtde */
-        #itens th:nth-child(4), #itens td:nth-child(4) { width: 15%; } /* Valor Unitário */
-        #itens th:nth-child(5), #itens td:nth-child(5) { width: 15%; } /* Subtotal */
-        #itens th:nth-child(6), #itens td:nth-child(6) { width: 10%; } /* Ações */
-
+        /* Ajuste as larguras das colunas da tabela de itens */
+        #itens th:nth-child(1), #itens td:nth-child(1) {
+            width: 3%; /* Coluna # (sequencial) */
+            text-align: center; /* Centraliza o número */
+        }
+        #itens th:nth-child(2), #itens td:nth-child(2) {
+            width: 47%; /* Coluna Descrição - Aumentada para maior texto */
+        }
+        #itens th:nth-child(3), #itens td:nth-child(3) {
+            width: 8%; /* Coluna Qtde */
+            text-align: center; /* Centraliza a quantidade */
+        }
+        #itens th:nth-child(4), #itens td:nth-child(4) {
+            width: 17%; /* Coluna Valor Unitário (R$) - Suficiente para R$999.999,00 */
+            text-align: right; /* Alinha o valor à direita */
+        }
+        #itens th:nth-child(5), #itens td:nth-child(5) {
+            width: 17%; /* Coluna Subtotal (R$) - Suficiente para R$999.999,00 */
+            text-align: right; /* Alinha o valor à direita */
+        }
+        #itens th:nth-child(6), #itens td:nth-child(6) {
+            width: 8%; /* Coluna Ações - Reduzida */
+            text-align: center; /* Centraliza o conteúdo (botão) */
+        }
+    
+        /* Estilo para a textarea da descrição na tabela */
+        #itens td textarea.descricao {
+            min-height: 30px; /* Altura mínima adequada */
+            height: auto; /* Permite que a altura se ajuste ao conteúdo */
+            overflow-y: hidden; /* Mantém oculto o scroll se não houver overflow */
+            box-sizing: border-box;
+            vertical-align: top; /* Alinha o texto ao topo da célula */
+            resize: vertical; /* Permite redimensionamento vertical pelo usuário */
+            width: 100%; /* Garante que o textarea ocupe a largura total da célula */
+            padding: 5px; /* Ajusta o padding para melhor visualização */
+        }
+    
+        /* Ajuste para centralizar inputs de Qtde e Valor Unitário dentro da tabela */
         #itens input.qtde {
-            width: 60px; /* Reduced width for quantity */
-            text-align: center;
+            width: 100%; /* Ocupa a largura total da célula */
+            text-align: center; /* Centraliza o texto */
+            box-sizing: border-box;
+        }
+    
+        #itens input.valor {
+            width: 100%; /* Ocupa a largura total da célula */
+            text-align: right; /* Alinha o texto à direita para valores */
+            box-sizing: border-box;
         }
 
         #itens input.valor {
