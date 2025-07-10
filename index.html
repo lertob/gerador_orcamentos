@@ -223,55 +223,54 @@
             text-align: center; /* Centraliza o número */
         }
         #itens th:nth-child(2), #itens td:nth-child(2) {
-            width: 53%; /* Coluna Descrição - Aumentada ainda mais */
+            width: 55%; /* Coluna Descrição - Aumentada ainda mais */
         }
         #itens th:nth-child(3), #itens td:nth-child(3) {
-            width: 7%; /* Coluna Qtde - Reduzida */
+            width: 6%; /* Coluna Qtde - Reduzida ao máximo */
             text-align: center; /* Centraliza a quantidade */
         }
         #itens th:nth-child(4), #itens td:nth-child(4) {
-            width: 14%; /* Coluna Valor Unitário (R$) - Reduzida, mas suficiente para R$999.999,00 */
+            width: 13%; /* Coluna Valor Unitário (R$) - Reduzida, mas suficiente para R$999.999,00 */
             text-align: right; /* Alinha o valor à direita */
         }
         #itens th:nth-child(5), #itens td:nth-child(5) {
-            width: 14%; /* Coluna Subtotal (R$) - Reduzida, mas suficiente para R$999.999,00 */
+            width: 13%; /* Coluna Subtotal (R$) - Reduzida, mas suficiente para R$999.999,00 */
             text-align: right; /* Alinha o valor à direita */
         }
         #itens th:nth-child(6), #itens td:nth-child(6) {
-            width: 9%; /* Coluna Ações - Levemente aumentada para o botão */
+            width: 10%; /* Coluna Ações - Levemente aumentada para o botão e centralização */
             text-align: center; /* Centraliza o conteúdo (botão) */
         }
     
-        /* Estilos para células da tabela para alinhar o conteúdo verticalmente */
+        /* Estilos para células da tabela para alinhar o conteúdo verticalmente e controlar a altura da linha */
         #itens td {
             vertical-align: middle; /* Alinha o conteúdo das células no meio */
-            padding-top: 5px; /* Adiciona um pequeno padding para não colar no topo */
-            padding-bottom: 5px; /* Adiciona um pequeno padding para não colar na base */
+            padding-top: 3px; /* Reduz padding superior */
+            padding-bottom: 3px; /* Reduz padding inferior */
+            /* min-height: 35px; */ /* Pode adicionar um min-height para a linha se as células ficarem muito pequenas */
         }
     
-        /* Estilo para a textarea da descrição na tabela */
-        #itens td textarea.descricao {
-            height: 28px; /* Altura fixa para corresponder aos inputs */
-            min-height: 28px; /* Garante que não encolha menos que isso */
-            padding: 4px; /* Ajusta o padding para ser similar aos inputs */
+        /* Estilo base para todos os inputs e textareas dentro da tabela de itens */
+        #itens input,
+        #itens textarea {
+            font-size: 0.9em; /* Levemente reduzido para caber melhor */
+            height: 25px; /* Altura fixa e menor para todos */
+            min-height: 25px; /* Garante que não encolha menos que isso */
+            padding: 3px 5px; /* Reduz o padding para que o conteúdo ocupe mais espaço visual e o campo seja menor */
             box-sizing: border-box; /* Inclui padding e bordas na largura/altura */
+            line-height: 18px; /* Ajusta a altura da linha do texto dentro dos campos */
+            border: 1px solid #ccc; /* Borda padrão */
+            border-radius: 4px; /* Cantos arredondados */
+        }
+    
+        /* Estilo específico para a textarea da descrição na tabela */
+        #itens td textarea.descricao {
             width: 100%; /* Ocupa a largura total da célula */
             resize: vertical; /* Permite redimensionamento vertical pelo usuário */
             overflow-y: hidden; /* Esconde a barra de rolagem inicialmente */
-            line-height: 20px; /* Ajusta a altura da linha do texto dentro da textarea */
         }
         
-        /* Estilo para os inputs dentro da tabela, para garantir altura e alinhamento uniforme */
-        #itens input.qtde,
-        #itens input.valor {
-            height: 28px; /* Altura fixa para corresponder à textarea */
-            min-height: 28px; /* Garante que não encolha menos que isso */
-            padding: 4px; /* Ajusta o padding para ser similar à textarea */
-            box-sizing: border-box; /* Inclui padding e borda na largura/altura */
-            line-height: 20px; /* Ajusta a altura da linha do texto dentro do input */
-        }
-    
-        /* Ajuste para centralizar inputs de Qtde e Valor Unitário dentro da tabela */
+        /* Estilo para os inputs de Qtde e Valor dentro da tabela */
         #itens input.qtde {
             width: 100%; /* Ocupa a largura total da célula */
             text-align: center; /* Centraliza o texto */
@@ -280,6 +279,14 @@
         #itens input.valor {
             width: 100%; /* Ocupa a largura total da célula */
             text-align: right; /* Alinha o texto à direita para valores */
+        }
+    
+        /* Estilo para o botão de excluir na tabela */
+        #itens .btn-danger {
+            display: inline-block; /* Garante que o botão respeite o text-align de seu pai */
+            padding: 3px 6px; /* Reduz o padding do botão para ser menor */
+            font-size: 0.8em; /* Diminui o texto do botão */
+            margin: 0 auto; /* Ajuda na centralização em alguns contextos */
         }
     
         /* Estilo para o botão de excluir na tabela */
