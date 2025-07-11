@@ -641,6 +641,32 @@
           display: none; /* Oculta ações no PDF */
       }
     }
+    
+    .exportar-pdf #itens th:nth-child(1),
+    .exportar-pdf #itens td:nth-child(1) {
+      width: 3%;
+    }
+    .exportar-pdf #itens th:nth-child(2),
+    .exportar-pdf #itens td:nth-child(2) {
+      width: 64%;
+    }
+    .exportar-pdf #itens th:nth-child(3),
+    .exportar-pdf #itens td:nth-child(3) {
+      width: 7%;
+    }
+    .exportar-pdf #itens th:nth-child(4),
+    .exportar-pdf #itens td:nth-child(4) {
+      width: 13%;
+    }
+    .exportar-pdf #itens th:nth-child(5),
+    .exportar-pdf #itens td:nth-child(5) {
+      width: 13%;
+    }
+    .exportar-pdf #itens th:nth-child(6),
+    .exportar-pdf #itens td:nth-child(6) {
+      display: none;
+    }
+
     /* Ajustes específicos para inputs dentro das células da tabela (em mobile) */
     #itens td input {
         width: calc(100% - 20px); /* Ajusta a largura para caber no padding da célula */
@@ -1351,6 +1377,7 @@ function atualizarTotais() {
                 });
             }, 200); // 200ms de atraso
         }
+        
         function compartilharPDF() {
             const orcamentoDiv = document.getElementById("orcamento");
         
@@ -1359,13 +1386,13 @@ function atualizarTotais() {
                 return;
             }
         
-            // Pega nome do cliente e número do orçamento
             const nomeCliente = document.getElementById("cliente").value.trim() || "cliente";
             const numero = document.getElementById("numero").value.trim().replace(/\//g, "_") || "orcamento";
-        
             const nomeArquivo = `orcamento_${nomeCliente.replace(/\s+/g, "_").toLowerCase()}_${numero}.pdf`;
         
-            // Configurações do PDF
+            // Adiciona classe temporária para aplicar estilo "de impressão"
+            document.body.classList.add("exportar-pdf");
+        
             const opt = {
                 margin: 0.5,
                 filename: nomeArquivo,
@@ -1381,6 +1408,9 @@ function atualizarTotais() {
             html2pdf().set(opt).from(orcamentoDiv).toPdf().get('pdf').then(function (pdf) {
                 const pdfBlob = pdf.output('blob');
                 const file = new File([pdfBlob], nomeArquivo, { type: "application/pdf" });
+        
+                // Remove a classe após a captura
+                document.body.classList.remove("exportar-pdf");
         
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     navigator.share({
@@ -1398,6 +1428,7 @@ function atualizarTotais() {
                 }
             });
         }
+
 
 
         // Modal: abrir lista de orçamentos salvos
