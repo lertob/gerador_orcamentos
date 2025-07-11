@@ -1390,17 +1390,20 @@ function atualizarTotais() {
                 return;
             }
         
-            // Pega nome do cliente e número do orçamento
             const nomeCliente = document.getElementById("cliente").value.trim() || "cliente";
             const numero = document.getElementById("numero").value.trim().replace(/\//g, "_") || "orcamento";
             const nomeArquivo = `orcamento_${nomeCliente.replace(/\s+/g, "_").toLowerCase()}_${numero}.pdf`;
         
-            // Clona o conteúdo do orçamento
-            const clone = orcamentoOriginal.cloneNode(true);
+            // Clona conteúdo como HTML
+            const cloneHTML = orcamentoOriginal.innerHTML;
         
-            // Insere estilos corrigidos direto na div
+            // Insere estilos diretamente no clone para garantir formatação no PDF
             const estilo = `
                 <style>
+                    body { font-family: Arial, sans-serif; font-size: 12px; }
+                    table { border-collapse: collapse; width: 100%; }
+                    th, td { border: 1px solid #ccc; padding: 6px; }
+                    th { background-color: #e8f0fe; }
                     #itens th:nth-child(1), #itens td:nth-child(1) { width: 3%; text-align: center; }
                     #itens th:nth-child(2), #itens td:nth-child(2) { width: 64%; text-align: left; }
                     #itens th:nth-child(3), #itens td:nth-child(3) { width: 7%; text-align: center; }
@@ -1410,10 +1413,10 @@ function atualizarTotais() {
                 </style>
             `;
         
-            orcamentoCloneDiv.innerHTML = estilo;
-            orcamentoCloneDiv.appendChild(clone);
+            // Preenche o conteúdo da div oculta com o HTML + estilo
+            orcamentoCloneDiv.innerHTML = estilo + cloneHTML;
         
-            // Gera PDF do clone
+            // Gera PDF do conteúdo da div oculta
             html2pdf().set({
                 margin: 0.5,
                 filename: nomeArquivo,
@@ -1421,7 +1424,7 @@ function atualizarTotais() {
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
-                    scrollY: 0,
+                    scrollY: 0
                 },
                 jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
             }).from(orcamentoCloneDiv).toPdf().get('pdf').then(function (pdf) {
@@ -1444,6 +1447,9 @@ function atualizarTotais() {
                 }
             });
         }
+
+
+
 
 
 
