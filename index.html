@@ -962,6 +962,9 @@
         <textarea id="descricaoModalTextarea" rows="10" placeholder="Digite a descrição completa aqui..."></textarea>
         <button class="btn" onclick="fecharDescricaoModal()">Salvar e Fechar</button>
     </div>
+
+    <div id="orcamento-pdf-clone" style="display: none;"></div>
+        
     </div>
 
     <script>
@@ -1379,21 +1382,39 @@ function atualizarTotais() {
         }
         
         function compartilharPDF() {
-            const orcamentoDiv = document.getElementById("orcamento");
+            const orcamentoOriginal = document.getElementById("orcamento");
+            const orcamentoCloneDiv = document.getElementById("orcamento-pdf-clone");
         
-            if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
+            if (orcamentoOriginal.style.display === "none" || orcamentoOriginal.innerHTML.trim() === "") {
                 mostrarMensagem("🚨 Gere um orçamento antes de compartilhar.");
                 return;
             }
         
+            // Pega nome do cliente e número do orçamento
             const nomeCliente = document.getElementById("cliente").value.trim() || "cliente";
             const numero = document.getElementById("numero").value.trim().replace(/\//g, "_") || "orcamento";
             const nomeArquivo = `orcamento_${nomeCliente.replace(/\s+/g, "_").toLowerCase()}_${numero}.pdf`;
         
-            // Adiciona classe temporária para aplicar estilo "de impressão"
-            document.body.classList.add("exportar-pdf");
+            // Clona o conteúdo do orçamento
+            const clone = orcamentoOriginal.cloneNode(true);
         
-            const opt = {
+            // Insere estilos corrigidos direto na div
+            const estilo = `
+                <style>
+                    #itens th:nth-child(1), #itens td:nth-child(1) { width: 3%; text-align: center; }
+                    #itens th:nth-child(2), #itens td:nth-child(2) { width: 64%; text-align: left; }
+                    #itens th:nth-child(3), #itens td:nth-child(3) { width: 7%; text-align: center; }
+                    #itens th:nth-child(4), #itens td:nth-child(4) { width: 13%; text-align: right; }
+                    #itens th:nth-child(5), #itens td:nth-child(5) { width: 13%; text-align: right; }
+                    #itens th:nth-child(6), #itens td:nth-child(6) { display: none; }
+                </style>
+            `;
+        
+            orcamentoCloneDiv.innerHTML = estilo;
+            orcamentoCloneDiv.appendChild(clone);
+        
+            // Gera PDF do clone
+            html2pdf().set({
                 margin: 0.5,
                 filename: nomeArquivo,
                 image: { type: "jpeg", quality: 0.98 },
@@ -1403,14 +1424,9 @@ function atualizarTotais() {
                     scrollY: 0,
                 },
                 jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
-            };
-        
-            html2pdf().set(opt).from(orcamentoDiv).toPdf().get('pdf').then(function (pdf) {
+            }).from(orcamentoCloneDiv).toPdf().get('pdf').then(function (pdf) {
                 const pdfBlob = pdf.output('blob');
                 const file = new File([pdfBlob], nomeArquivo, { type: "application/pdf" });
-        
-                // Remove a classe após a captura
-                document.body.classList.remove("exportar-pdf");
         
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     navigator.share({
