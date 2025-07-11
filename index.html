@@ -813,9 +813,14 @@
         </div>
     </section>
 
-    <div style="text-align: center; margin-bottom: 40px;">
+    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 40px;">
         <button class="btn" onclick="gerarOrcamento()">💾 Salvar Orçamento</button>
-        <button class="btn" onclick="baixarPDF()">Baixar PDF</button>
+        <button class="btn" onclick="baixarPDF()">📄 Baixar PDF</button>
+        <button class="btn" onclick="compartilharPDF()" style="background-color: #25D366; display: flex; align-items: center; gap: 6px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/768px-WhatsApp.svg.png" alt="WhatsApp" style="width: 18px; height: 18px;">
+            Compartilhar
+        </button>
+    </div>
 <div class="feedback" id="feedback-msg">✔️ Ação realizada com sucesso!</div>
 </button>
     </div>
@@ -1322,6 +1327,38 @@ function atualizarTotais() {
                 });
             }, 200); // 200ms de atraso
         }
+            // Compartilhar PDF
+            function compartilharPDF() {
+            const orcamentoDiv = document.getElementById("orcamento");
+
+            if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
+                mostrarMensagem("🚨 Gere um orçamento antes de compartilhar.");
+                return;
+            }
+
+            // Gera o PDF como blob
+            html2pdf().from(orcamentoDiv).outputPdf('blob').then(blob => {
+                const file = new File([blob], "orcamento.pdf", { type: "application/pdf" });
+
+                // Verifica se o navegador suporta compartilhamento de arquivos
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        title: "Orçamento HBS",
+                        text: "Segue o orçamento gerado pela HBS Estruturas Metálicas.",
+                        files: [file],
+                    }).then(() => {
+                        mostrarMensagem("✅ Compartilhado com sucesso!");
+                    }).catch((error) => {
+                        console.error("Erro ao compartilhar:", error);
+                        mostrarMensagem("🚨 Erro ao compartilhar o PDF.");
+                    });
+                } else {
+                    // Fallback se estiver em desktop ou navegador sem suporte
+                    mostrarMensagem("❗ Compartilhamento de arquivos só está disponível em smartphones compatíveis.");
+                }
+            });
+        }
+
 
 // ... (o restante do seu código JavaScript)
 
