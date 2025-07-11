@@ -1335,32 +1335,46 @@ function atualizarTotais() {
                 return;
             }
         
-            // Pequeno atraso para garantir renderização completa
-            setTimeout(() => {
-                html2pdf().from(orcamentoDiv).outputPdf('blob').then(blob => {
-                    const file = new File([blob], "orcamento.pdf", { type: "application/pdf" });
+            // Pega nome do cliente e número do orçamento
+            const nomeCliente = document.getElementById("cliente").value.trim() || "cliente";
+            const numero = document.getElementById("numero").value.trim().replace(/\//g, "_") || "orcamento";
         
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            title: "Orçamento HBS",
-                            text: "Segue o orçamento gerado pela HBS Estruturas Metálicas.",
-                            files: [file],
-                        }).then(() => {
-                            mostrarMensagem("✅ Compartilhado com sucesso!");
-                        }).catch((error) => {
-                            console.error("Erro ao compartilhar:", error);
-                            mostrarMensagem("🚨 Erro ao compartilhar o PDF.");
-                        });
-                    } else {
-                        mostrarMensagem("❗ O compartilhamento de arquivos só funciona em celulares compatíveis.");
-                    }
-                });
-            }, 500); // atraso de 300ms para renderizar
+            const nomeArquivo = `orcamento_${nomeCliente.replace(/\s+/g, "_").toLowerCase()}_${numero}.pdf`;
+        
+            // Configurações do PDF
+            const opt = {
+                margin: 0.5,
+                filename: nomeArquivo,
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                },
+                jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+            };
+        
+            html2pdf().set(opt).from(orcamentoDiv).toPdf().get('pdf').then(function (pdf) {
+                const pdfBlob = pdf.output('blob');
+                const file = new File([pdfBlob], nomeArquivo, { type: "application/pdf" });
+        
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        title: "Orçamento HBS",
+                        text: "Segue em anexo o orçamento gerado.",
+                        files: [file]
+                    }).then(() => {
+                        mostrarMensagem("✅ Orçamento compartilhado com sucesso!");
+                    }).catch((err) => {
+                        console.error("Erro ao compartilhar:", err);
+                        mostrarMensagem("🚨 Erro ao compartilhar o PDF.");
+                    });
+                } else {
+                    mostrarMensagem("❗ Este dispositivo não suporta compartilhamento de arquivos.");
+                }
+            });
         }
 
-
-
-// ... (o restante do seu código JavaScript)
 
         // Modal: abrir lista de orçamentos salvos
         function abrirModalOrcamentos() {
