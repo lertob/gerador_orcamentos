@@ -217,29 +217,35 @@
             margin-top: 10px;
         }
 
-        /* Ajuste as larguras das colunas da tabela de itens */
+        /* Ajuste refinado para larguras das colunas da tabela de itens */
         #itens th:nth-child(1), #itens td:nth-child(1) {
-            width: 2%; /* Coluna # (sequencial) */
-            text-align: center; /* Centraliza o número */
+            width: 3%; /* Coluna # (sequencial) reduzida ao mínimo */
+            text-align: center;
         }
+        
         #itens th:nth-child(2), #itens td:nth-child(2) {
-            width: 70%; /* Coluna Descrição - Aumentada ainda mais */
+            width: 68%; /* Coluna Descrição ganha mais espaço */
+            text-align: left;
         }
+        
         #itens th:nth-child(3), #itens td:nth-child(3) {
-            width: 6%; /* Coluna Qtde - Reduzida ao máximo */
-            text-align: center; /* Centraliza a quantidade */
+            width: 6%; /* Qtde reduzida */
+            text-align: center;
         }
+        
         #itens th:nth-child(4), #itens td:nth-child(4) {
-            width: 12%; /* Coluna Valor Unitário (R$) - Reduzida, mas suficiente para R$999.999,00 */
-            text-align: right; /* Alinha o valor à direita */
+            width: 11%; /* Valor Unitário reduzido */
+            text-align: right;
         }
+        
         #itens th:nth-child(5), #itens td:nth-child(5) {
-            width: 12%; /* Coluna Subtotal (R$) - Reduzida, mas suficiente para R$999.999,00 */
-            text-align: right; /* Alinha o valor à direita */
+            width: 10%; /* Subtotal reduzido */
+            text-align: right;
         }
+        
         #itens th:nth-child(6), #itens td:nth-child(6) {
-            width: 9%; /* Coluna Ações - Levemente aumentada para o botão e centralização */
-            text-align: center; /* Centraliza o conteúdo (botão) */
+            width: 2%; /* Ações quase sem espaço — só botão */
+            text-align: center;
         }
     
         /* Estilos para células da tabela para alinhar o conteúdo verticalmente e controlar a altura da linha */
