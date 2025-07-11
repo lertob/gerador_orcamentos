@@ -1327,37 +1327,37 @@ function atualizarTotais() {
                 });
             }, 200); // 200ms de atraso
         }
-            // Compartilhar PDF
-            function compartilharPDF() {
+        function compartilharPDF() {
             const orcamentoDiv = document.getElementById("orcamento");
-
+        
             if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
                 mostrarMensagem("🚨 Gere um orçamento antes de compartilhar.");
                 return;
             }
-
-            // Gera o PDF como blob
-            html2pdf().from(orcamentoDiv).outputPdf('blob').then(blob => {
-                const file = new File([blob], "orcamento.pdf", { type: "application/pdf" });
-
-                // Verifica se o navegador suporta compartilhamento de arquivos
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    navigator.share({
-                        title: "Orçamento HBS",
-                        text: "Segue o orçamento gerado pela HBS Estruturas Metálicas.",
-                        files: [file],
-                    }).then(() => {
-                        mostrarMensagem("✅ Compartilhado com sucesso!");
-                    }).catch((error) => {
-                        console.error("Erro ao compartilhar:", error);
-                        mostrarMensagem("🚨 Erro ao compartilhar o PDF.");
-                    });
-                } else {
-                    // Fallback se estiver em desktop ou navegador sem suporte
-                    mostrarMensagem("❗ Compartilhamento de arquivos só está disponível em smartphones compatíveis.");
-                }
-            });
+        
+            // Pequeno atraso para garantir renderização completa
+            setTimeout(() => {
+                html2pdf().from(orcamentoDiv).outputPdf('blob').then(blob => {
+                    const file = new File([blob], "orcamento.pdf", { type: "application/pdf" });
+        
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            title: "Orçamento HBS",
+                            text: "Segue o orçamento gerado pela HBS Estruturas Metálicas.",
+                            files: [file],
+                        }).then(() => {
+                            mostrarMensagem("✅ Compartilhado com sucesso!");
+                        }).catch((error) => {
+                            console.error("Erro ao compartilhar:", error);
+                            mostrarMensagem("🚨 Erro ao compartilhar o PDF.");
+                        });
+                    } else {
+                        mostrarMensagem("❗ O compartilhamento de arquivos só funciona em celulares compatíveis.");
+                    }
+                });
+            }, 300); // atraso de 300ms para renderizar
         }
+
 
 
 // ... (o restante do seu código JavaScript)
