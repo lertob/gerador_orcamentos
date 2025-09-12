@@ -1370,54 +1370,54 @@ function atualizarTotais() {
 
             mostrarMensagem("💾 Orçamento salvo com sucesso!");
         }
-// Baixar PDF
-function baixarPDF() {
-    const orcamentoDiv = document.getElementById("orcamento");
-
-    if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
-        mostrarMensagem("🚨 Gere um orçamento antes de baixar o PDF.");
-        return;
-    }
-
-    // Identifica o checkbox e o elemento do total DENTRO da div do orçamento
-    const ocultarTotalCheckbox = document.getElementById('ocultarTotalGeral');
-    const totalFinalElement = orcamentoDiv.querySelector('.total-final');
-    
-    // Se o checkbox estiver marcado E o elemento do total existir, adiciona a classe para ocultá-lo no PDF
-    if (ocultarTotalCheckbox.checked && totalFinalElement) {
-        totalFinalElement.classList.add('ocultar-para-pdf');
-    }
-
-    // Obter o nome do cliente e formatá-lo
-    const nomeCliente = document.getElementById("cliente").value.trim();
-    let nomeClienteFormatado = "";
-    if (nomeCliente) {
-        nomeClienteFormatado = nomeCliente
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-zA-Z0-9\s]/g, "")
-            .replace(/\s+/g, "_")
-            .toLowerCase();
-    }
-    const nomeArquivo = nomeClienteFormatado ? `orcamento_${nomeClienteFormatado}.pdf` : 'orcamento.pdf';
-
-    // Chama a função para gerar e salvar o PDF
-    html2pdf(orcamentoDiv, {
-        margin: 10,
-        filename: nomeArquivo,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    });
-
-    // Usa um pequeno atraso para garantir que o PDF foi gerado
-    // e remove a classe para restaurar a visibilidade do total na tela
-    setTimeout(() => {
-        if (totalFinalElement) {
-            totalFinalElement.classList.remove('ocultar-para-pdf');
+        // Baixar PDF
+        function baixarPDF() {
+            const orcamentoDiv = document.getElementById("orcamento");
+        
+            if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
+                mostrarMensagem("🚨 Gere um orçamento antes de baixar o PDF.");
+                return;
+            }
+        
+            // Identifica o checkbox e o elemento do total DENTRO da div do orçamento
+            const ocultarTotalCheckbox = document.getElementById('ocultarTotalGeral');
+            const totalFinalElement = orcamentoDiv.querySelector('.total-final');
+            
+            // Se o checkbox estiver marcado E o elemento do total existir, adiciona a classe para ocultá-lo no PDF
+            if (ocultarTotalCheckbox.checked && totalFinalElement) {
+                totalFinalElement.classList.add('ocultar-para-pdf');
+            }
+        
+            // Obter o nome do cliente e formatá-lo, mantendo sua lógica
+            const nomeCliente = document.getElementById("cliente").value.trim();
+            let nomeClienteFormatado = "";
+            if (nomeCliente) {
+                nomeClienteFormatado = nomeCliente
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9\s]/g, "")
+                    .replace(/\s+/g, "_")
+                    .toLowerCase();
+            }
+            const nomeArquivo = nomeClienteFormatado ? `orcamento_${nomeClienteFormatado}.pdf` : 'orcamento.pdf';
+        
+            // Chama a função para gerar e salvar o PDF
+            html2pdf(orcamentoDiv, {
+                margin: 10,
+                filename: nomeArquivo,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            });
+        
+            // Usa um pequeno atraso para garantir que o PDF foi gerado
+            // e remove a classe para restaurar a visibilidade do total na tela
+            setTimeout(() => {
+                if (totalFinalElement) {
+                    totalFinalElement.classList.remove('ocultar-para-pdf');
+                }
+            }, 1000); // 1 segundo de atraso
         }
-    }, 1000); // 1 segundo de atraso
-}
             // Pega o número do orçamento atual
             const numeroOrcamento = document.getElementById("numero").value.replace(/\//g, "_");
 
@@ -1893,6 +1893,7 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
 
 
 
