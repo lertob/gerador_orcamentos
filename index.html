@@ -456,29 +456,6 @@
     font-size: 12px; /* Linha de total menor */
 }
 
-        .total-adicionar-container {
-    display: flex;
-    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas pequenas */
-    align-items: center;
-    gap: 15px; /* Espaço entre os elementos */
-    justify-content: flex-end; /* Alinha o grupo à direita */
-    margin-top: 15px;
-}
-
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-right: auto; /* Empurra o checkbox para a esquerda */
-}
-
-/* Ajusta o estilo do total para ficar no lugar correto */
-.total-adicionar-container .total-display {
-    font-size: 18px;
-    font-weight: bold;
-    text-align: right;
-    margin: 0;
-}
 /* --- INÍCIO: ESTILOS PARA RESPONSIVIDADE (MOBILE FIRST OU ESPECÍFICOS) --- */
 
 /* Ajustes gerais para telas menores que 768px (Tablets e Celulares) */
@@ -883,16 +860,9 @@
             </thead>
             <tbody></tbody>
         </table>
-<div class="total-adicionar-container">
-    <div class="checkbox-container">
-        <input type="checkbox" id="ocultarTotalGeral">
-        <label for="ocultarTotalGeral">Ocultar total geral no orçamento</label>
-    </div>
-    <div class="total-display">
-        Total: R$ <span id="total-geral">0,00</span>
-    </div>
-    <button class="btn" onclick="adicionarItem()">➕ Adicionar Item</button>
-</div>
+        <button class="btn" onclick="adicionarItem()">
+<p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
+➕ Adicionar Item</button>
     </section>
 
     <section class="section" id="dados-complementares">
@@ -1369,51 +1339,32 @@ function atualizarTotais() {
         // Baixar PDF
         function baixarPDF() {
             const orcamentoDiv = document.getElementById("orcamento");
-        
+
             if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
                 mostrarMensagem("🚨 Gere um orçamento antes de baixar o PDF.");
                 return;
             }
-        
-            // Identifica o checkbox e o elemento do total DENTRO da div do orçamento
-            const ocultarTotalCheckbox = document.getElementById('ocultarTotalGeral');
-            const totalFinalElement = orcamentoDiv.querySelector('.total-final');
-            
-            // Se o checkbox estiver marcado E o elemento do total existir, adiciona a classe para ocultá-lo no PDF
-            if (ocultarTotalCheckbox.checked && totalFinalElement) {
-                totalFinalElement.classList.add('ocultar-para-pdf');
-            }
-        
-            // Obter o nome do cliente e formatá-lo, mantendo sua lógica
+
+            // PASSO 1: Adiciona a classe com os estilos específicos para PDF (se ainda estiver usando)
+            // orcamentoDiv.classList.add("pdf-specific-styles"); // Se você removeu, não precisa mais dessa linha
+
+            // Obter o nome do cliente e formatá-lo
             const nomeCliente = document.getElementById("cliente").value.trim();
             let nomeClienteFormatado = "";
             if (nomeCliente) {
+                // Remove acentos e caracteres especiais, substitui espaços por underscores
                 nomeClienteFormatado = nomeCliente
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-zA-Z0-9\s]/g, "")
-                    .replace(/\s+/g, "_")
-                    .toLowerCase();
-            }
-            const nomeArquivo = nomeClienteFormatado ? `orcamento_${nomeClienteFormatado}.pdf` : 'orcamento.pdf';
-        
-            // Chama a função para gerar e salvar o PDF
-            html2pdf(orcamentoDiv, {
-                margin: 10,
-                filename: nomeArquivo,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            });
-        
-            // Usa um pequeno atraso para garantir que o PDF foi gerado
-            // e remove a classe para restaurar a visibilidade do total na tela
-            setTimeout(() => {
-                if (totalFinalElement) {
-                    totalFinalElement.classList.remove('ocultar-para-pdf');
+                    .normalize("NFD") // Normaliza para decompor caracteres acentuados
+                    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos
+                    .replace(/[^a-zA-Z0-9\s]/g, "") // Remove caracteres não alfanuméricos (exceto espaços)
+                    .replace(/\s+/g, "_") // Substitui múltiplos espaços por um único underscore
+                    .toLowerCase(); // Converte para minúsculas
+                // Adiciona um underscore no final se houver um nome de cliente para separar do número
+                if (nomeClienteFormatado) {
+                    nomeClienteFormatado = nomeClienteFormatado + "_";
                 }
-            }, 1000); // 1 segundo de atraso
-        }
+            }
+
             // Pega o número do orçamento atual
             const numeroOrcamento = document.getElementById("numero").value.replace(/\//g, "_");
 
@@ -1889,8 +1840,4 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
-
-
-
-
 
