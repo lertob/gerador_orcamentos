@@ -1367,8 +1367,7 @@ function atualizarTotais() {
             mostrarMensagem("💾 Orçamento salvo com sucesso!");
         }
         // Baixar PDF
-
-            function baixarPDF() {
+        function baixarPDF() {
             const orcamentoDiv = document.getElementById("orcamento");
         
             if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
@@ -1376,33 +1375,49 @@ function atualizarTotais() {
                 return;
             }
         
-            // Identifica o checkbox e o elemento do total
+            // Identifica o checkbox e o elemento do total DENTRO da div do orçamento
             const ocultarTotalCheckbox = document.getElementById('ocultarTotalGeral');
-            const totalDisplayElement = document.querySelector('.total-display');
+            const totalFinalElement = orcamentoDiv.querySelector('.total-final');
             
             // Salva o estado original do total para restaurá-lo depois
-            const estadoOriginalTotal = totalDisplayElement.style.display;
+            let estadoOriginalTotal = null;
         
-            // Se o checkbox estiver marcado, oculta o total geral
-            if (ocultarTotalCheckbox.checked) {
-                totalDisplayElement.style.display = 'none';
+            // Se o checkbox estiver marcado E o elemento do total existir, oculta-o
+            if (ocultarTotalCheckbox.checked && totalFinalElement) {
+                estadoOriginalTotal = totalFinalElement.style.display;
+                totalFinalElement.style.display = 'none';
             }
-            // Obter o nome do cliente e formatá-lo
+        
+            // Obter o nome do cliente e formatá-lo, mantendo sua lógica
             const nomeCliente = document.getElementById("cliente").value.trim();
             let nomeClienteFormatado = "";
             if (nomeCliente) {
-                // Remove acentos e caracteres especiais, substitui espaços por underscores
                 nomeClienteFormatado = nomeCliente
-                    .normalize("NFD") // Normaliza para decompor caracteres acentuados
-                    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos
-                    .replace(/[^a-zA-Z0-9\s]/g, "") // Remove caracteres não alfanuméricos (exceto espaços)
-                    .replace(/\s+/g, "_") // Substitui múltiplos espaços por um único underscore
-                    .toLowerCase(); // Converte para minúsculas
-                // Adiciona um underscore no final se houver um nome de cliente para separar do número
-                if (nomeClienteFormatado) {
-                    nomeClienteFormatado = nomeClienteFormatado + "_";
-                }
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-zA-Z0-9\s]/g, "")
+                    .replace(/\s+/g, "_")
+                    .toLowerCase();
             }
+            const nomeArquivo = nomeClienteFormatado ? `orcamento_${nomeClienteFormatado}.pdf` : 'orcamento.pdf';
+        
+            // Chama a função para gerar e salvar o PDF
+            html2pdf(orcamentoDiv, {
+                margin: 10,
+                filename: nomeArquivo,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            });
+        
+            // Usa um pequeno atraso para garantir que o PDF foi gerado
+            // e restaura o estado original do total na tela
+            setTimeout(() => {
+                if (totalFinalElement && estadoOriginalTotal !== null) {
+                    totalFinalElement.style.display = estadoOriginalTotal;
+                }
+            }, 1000); // 1 segundo de atraso
+        }
 
             // Pega o número do orçamento atual
             const numeroOrcamento = document.getElementById("numero").value.replace(/\//g, "_");
@@ -1879,4 +1894,5 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
 
