@@ -871,6 +871,12 @@
             <label for="formaPagamento">Forma de pagamento</label>
             <input type="text" id="formaPagamento" />
         </div>
+
+        <div style="margin-top: 10px;">
+            <input type="checkbox" id="ocultarTotal" />
+            <label for="ocultarTotal">Ocultar valor total geral do orçamento</label>
+        </div>
+        
         <div>
             <label for="observacoes">Observações</label>
             <textarea id="observacoes"></textarea>
@@ -1189,6 +1195,8 @@ function atualizarTotais() {
             const formaPagamento = document.getElementById("formaPagamento").value.trim();
             const observacoes = document.getElementById("observacoes").value.trim();
 
+            const ocultarTotal = document.getElementById("ocultarTotal").checked;
+
             if (!numero || !data || !cliente) {
                 alert("Por favor, preencha número do orçamento, data e nome do cliente.");
                 return;
@@ -1289,25 +1297,36 @@ function atualizarTotais() {
             });
 
             html += `
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="4" style="text-align:right; border: 1px solid #ccc; padding: 10px; font-size: 16px;"><strong>Total Geral:</strong></td>
-                                <td style="border: 1px solid #ccc; padding: 10px; text-align: right; font-size: 16px; background-color: #f0f8ff;"><strong>${totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                </tbody>`;
+            
+            if (!ocultarTotal) {
+                html += `
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" style="text-align:right; border: 1px solid #ccc; padding: 10px; font-size: 16px;">
+                                <strong>Total Geral:</strong>
+                            </td>
+                            <td style="border: 1px solid #ccc; padding: 10px; text-align: right; font-size: 16px; background-color: #f0f8ff;">
+                                <strong>${totalGeral.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</strong>
+                            </td>
+                        </tr>
+                    </tfoot>`;
+            }
+            
+            html += `
+                </table>
+            
+                <h3 style="color: #2a75bb; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Dados Complementares</h3>
+                
+                <div style="margin-bottom: 15px;">
+                    <p style="margin: 5px 0;"><strong>Forma de Pagamento:</strong> ${formaPagamento || 'Não especificada'}</p>
+                </div>
+                <div>
+                    <p style="margin: 5px 0;"><strong>Observações:</strong></p>
+                    <div style="margin: 5px 0; padding-left: 5px; min-height: 40px;">${observacoes.replace(/\n/g, '<br>') || 'Nenhuma observação'}</div>
+                </div>
+            </div>`;
 
-                    <h3 style="color: #2a75bb; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Dados Complementares</h3>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <p style="margin: 5px 0;"><strong>Forma de Pagamento:</strong> ${formaPagamento || 'Não especificada'}</p>
-                    </div>
-                    <div>
-                        <p style="margin: 5px 0;"><strong>Observações:</strong></p>
-                        <div style="margin: 5px 0; padding-left: 5px; min-height: 40px;">${observacoes.replace(/\n/g, '<br>') || 'Nenhuma observação'}</div>
-                    </div>
-                </div>`;
             // =========================================================================
             // FIM DAS ALTERAÇÕES NO LAYOUT DO PDF
             // =========================================================================
@@ -1840,3 +1859,4 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
