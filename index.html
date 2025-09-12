@@ -839,30 +839,39 @@
 
     <section class="section" id="itens-orcamento">
         <h2>Itens do Orçamento</h2>
-          <table id="itens" style="width: 100%; table-layout: fixed;">
+        <table id="itens" style="width: 100%; table-layout: fixed;">
             <colgroup>
-              <col style="width: 3%;">
-              <col style="width: 68%;">
-              <col style="width: 6%;">
-              <col style="width: 11%;">
-              <col style="width: 10%;">
-              <col style="width: 2%;">
+                <col style="width: 3%;">
+                <col style="width: 68%;">
+                <col style="width: 6%;">
+                <col style="width: 11%;">
+                <col style="width: 10%;">
+                <col style="width: 2%;">
             </colgroup>
             <thead>
-              <tr>
-                <th style="text-align: center;">#</th>
-                <th style="text-align: left;">Descrição</th>
-                <th style="text-align: center;">Qtde</th>
-                <th style="text-align: right;">Valor Unitário (R$)</th>
-                <th style="text-align: right;">Subtotal (R$)</th>
-                <th style="text-align: center;">Ações</th>
-              </tr>
+                <tr>
+                    <th style="text-align: center;">#</th>
+                    <th style="text-align: left;">Descrição</th>
+                    <th style="text-align: center;">Qtde</th>
+                    <th style="text-align: right;">Valor Unitário (R$)</th>
+                    <th style="text-align: right;">Subtotal (R$)</th>
+                    <th style="text-align: center;">Ações</th>
+                </tr>
             </thead>
             <tbody></tbody>
         </table>
-        <button class="btn" onclick="adicionarItem()">
-<p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
-➕ Adicionar Item</button>
+    
+        <!-- Botão adicionar item -->
+        <button class="btn" onclick="adicionarItem()">➕ Adicionar Item</button>
+    
+        <!-- Checkbox agora está dentro da seção de Itens -->
+        <div style="margin-top: 10px;">
+            <input type="checkbox" id="ocultarTotal" />
+            <label for="ocultarTotal">Ocultar valor total geral do orçamento</label>
+        </div>
+    
+        <!-- Total -->
+        <p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
     </section>
 
     <section class="section" id="dados-complementares">
@@ -872,11 +881,7 @@
             <input type="text" id="formaPagamento" />
         </div>
 
-        <div style="margin-top: 10px;">
-            <input type="checkbox" id="ocultarTotal" />
-            <label for="ocultarTotal">Ocultar valor total geral do orçamento</label>
-        </div>
-        
+ 
         <div>
             <label for="observacoes">Observações</label>
             <textarea id="observacoes"></textarea>
@@ -1859,4 +1864,5 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
 
