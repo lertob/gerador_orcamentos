@@ -864,15 +864,18 @@
         <!-- Botão adicionar item -->
         <button class="btn" onclick="adicionarItem()">➕ Adicionar Item</button>
     
-        <!-- Checkbox agora está dentro da seção de Itens -->
+        <!-- Checkbox alinhado corretamente -->
         <div style="margin-top: 10px;">
-            <input type="checkbox" id="ocultarTotal" />
-            <label for="ocultarTotal">Ocultar valor total geral do orçamento</label>
+            <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="checkbox" id="ocultarTotal" />
+                Ocultar valor total geral do orçamento
+            </label>
         </div>
     
         <!-- Total -->
         <p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
     </section>
+
 
     <section class="section" id="dados-complementares">
         <h2>Dados Complementares</h2>
@@ -1864,5 +1867,6 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
 
 
