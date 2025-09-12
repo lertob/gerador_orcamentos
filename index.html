@@ -456,6 +456,29 @@
     font-size: 12px; /* Linha de total menor */
 }
 
+        .total-adicionar-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha em telas pequenas */
+    align-items: center;
+    gap: 15px; /* Espaço entre os elementos */
+    justify-content: flex-end; /* Alinha o grupo à direita */
+    margin-top: 15px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-right: auto; /* Empurra o checkbox para a esquerda */
+}
+
+/* Ajusta o estilo do total para ficar no lugar correto */
+.total-adicionar-container .total-display {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+    margin: 0;
+}
 /* --- INÍCIO: ESTILOS PARA RESPONSIVIDADE (MOBILE FIRST OU ESPECÍFICOS) --- */
 
 /* Ajustes gerais para telas menores que 768px (Tablets e Celulares) */
@@ -860,9 +883,16 @@
             </thead>
             <tbody></tbody>
         </table>
-        <button class="btn" onclick="adicionarItem()">
-<p class="total-display">Total: R$ <span id="total-geral">0,00</span></p>
-➕ Adicionar Item</button>
+<div class="total-adicionar-container">
+    <div class="checkbox-container">
+        <input type="checkbox" id="ocultarTotalGeral">
+        <label for="ocultarTotalGeral">Ocultar total geral no orçamento</label>
+    </div>
+    <div class="total-display">
+        Total: R$ <span id="total-geral">0,00</span>
+    </div>
+    <button class="btn" onclick="adicionarItem()">➕ Adicionar Item</button>
+</div>
     </section>
 
     <section class="section" id="dados-complementares">
@@ -1337,17 +1367,26 @@ function atualizarTotais() {
             mostrarMensagem("💾 Orçamento salvo com sucesso!");
         }
         // Baixar PDF
-        function baixarPDF() {
-            const orcamentoDiv = document.getElementById("orcamento");
 
+            function baixarPDF() {
+            const orcamentoDiv = document.getElementById("orcamento");
+        
             if (orcamentoDiv.style.display === "none" || orcamentoDiv.innerHTML.trim() === "") {
                 mostrarMensagem("🚨 Gere um orçamento antes de baixar o PDF.");
                 return;
             }
-
-            // PASSO 1: Adiciona a classe com os estilos específicos para PDF (se ainda estiver usando)
-            // orcamentoDiv.classList.add("pdf-specific-styles"); // Se você removeu, não precisa mais dessa linha
-
+        
+            // Identifica o checkbox e o elemento do total
+            const ocultarTotalCheckbox = document.getElementById('ocultarTotalGeral');
+            const totalDisplayElement = document.querySelector('.total-display');
+            
+            // Salva o estado original do total para restaurá-lo depois
+            const estadoOriginalTotal = totalDisplayElement.style.display;
+        
+            // Se o checkbox estiver marcado, oculta o total geral
+            if (ocultarTotalCheckbox.checked) {
+                totalDisplayElement.style.display = 'none';
+            }
             // Obter o nome do cliente e formatá-lo
             const nomeCliente = document.getElementById("cliente").value.trim();
             let nomeClienteFormatado = "";
@@ -1840,3 +1879,4 @@ function mostrarMensagem(texto) {
 </script>
 </body>
 </html>
+
